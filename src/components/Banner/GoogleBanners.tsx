@@ -537,3 +537,60 @@ export function InstagramStory1080x1920({ logo, title, subtitle, cta }: BannerPr
     </div>
   );
 } 
+
+// Leaderboard Variation (728x90)
+export function LeaderboardVariation728x90({ logo, title, subtitle, cta }: BannerProps) {
+  const { gradientStyle, isDark, isLoading } = useGradient();
+
+  if (isLoading) {
+    return (
+      <div className="w-[728px] h-[90px] bg-gray-100 animate-pulse rounded-lg" />
+    );
+  }
+
+  return (
+    <div 
+      className={`w-[728px] h-[90px] relative overflow-hidden rounded-lg ${gradientStyle}`}
+    >
+      {/* Content Container */}
+      <div className="w-full h-full flex items-center justify-between px-8 relative">
+        {/* Left Content */}
+        <div className="flex-1 flex flex-col justify-center">
+          <BannerText
+            as="h2"
+            weight="bold"
+            className={`text-xl mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}
+          >
+            {title}
+          </BannerText>
+          <BannerText
+            weight="medium"
+            className={`text-sm ${isDark ? 'text-white/80' : 'text-gray-700'} max-w-[400px]`}
+          >
+            {subtitle}
+          </BannerText>
+        </div>
+
+        {/* Right Content */}
+        <div className="flex items-center gap-6">
+          <CTAButton 
+            text={cta}
+            className="px-6 py-2.5 text-sm font-medium hover:scale-105 transition-transform"
+          />
+          <Logo 
+            isDark={isDark}
+            width={80}
+            height={24}
+            className="flex-shrink-0"
+          />
+        </div>
+      </div>
+
+      {/* Decorative Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
+        <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-black/5 rounded-full blur-xl" />
+      </div>
+    </div>
+  );
+} 

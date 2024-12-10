@@ -1,7 +1,18 @@
-import { Leaderboard728x90, Rectangle300x250, Skyscraper160x600, LargeRectangle336x280, InstagramStory1080x1920 } from '../../components/Banner/GoogleBanners';
+'use client';
+
+import { useState } from 'react';
+import { 
+  Leaderboard728x90, 
+  Rectangle300x250, 
+  Skyscraper160x600, 
+  LargeRectangle336x280, 
+  InstagramStory1080x1920 
+} from '../../components/Banner/GoogleBanners';
+import { generateBannerCopy } from '../../utils/claudeApi';
 
 export default function Page() {
-  const bannerProps = {
+  const [isLoading, setIsLoading] = useState(false);
+  const [bannerProps, setBannerProps] = useState({
     logo: {
       src: "/placeholder-logo.png",
       alt: "Company Logo"
@@ -9,13 +20,59 @@ export default function Page() {
     title: "Transform Your Business with AI",
     subtitle: "Boost productivity and efficiency with our AI solutions",
     cta: "Get Started"
+  });
+
+  const handlePromptSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const prompt = formData.get('prompt') as string;
+
+    if (!prompt) return;
+
+    setIsLoading(true);
+    try {
+      const copy = await generateBannerCopy(prompt);
+      
+      // Update all banners with the leaderboard copy first
+      setBannerProps(prev => ({
+        ...prev,
+        title: copy.leaderboard.headline,
+        subtitle: copy.leaderboard.subheadline,
+        cta: copy.leaderboard.cta
+      }));
+    } catch (error) {
+      console.error('Error generating copy:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <main className="min-h-screen p-8">
       <h1 className="text-3xl font-bold mb-12 text-center text-gray-900">
-        Google Ad Banners
+        AI Banner Generator
       </h1>
+
+      {/* Prompt Input */}
+      <div className="max-w-2xl mx-auto mb-12">
+        <form onSubmit={handlePromptSubmit} className="space-y-4">
+          <textarea
+            name="prompt"
+            className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your prompt to generate banner copy..."
+            rows={4}
+            disabled={isLoading}
+          />
+          <button
+            type="submit"
+            className={`w-full py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors
+              ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Generating...' : 'Generate Banner Copy'}
+          </button>
+        </form>
+      </div>
       
       <div className="max-w-[1000px] mx-auto space-y-12">
         {/* Leaderboard Banner */}
