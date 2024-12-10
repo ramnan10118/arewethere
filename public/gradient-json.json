@@ -1,0 +1,359 @@
+{
+  "gradients": {
+    "gradient1": {
+      "name": "Frame 69",
+      "type": "linear-gradient",
+      "colors": ["#98FB98", "#32CD32"]
+    },
+    "gradient2": {
+      "name": "Frame 68",
+      "type": "linear-gradient",
+      "colors": ["#40E0D0", "#48D1CC"]
+    },
+    "gradient3": {
+      "name": "Frame 44",
+      "type": "linear-gradient",
+      "colors": ["#DDA0DD", "#EE82EE"]
+    },
+    "gradient4": {
+      "name": "Frame 43",
+      "type": "linear-gradient",
+      "colors": ["#E6E6FA", "#9370DB"]
+    },
+    "gradient5": {
+      "name": "Frame 48",
+      "type": "linear-gradient",
+      "colors": ["#FFA500", "#FF8C00"]
+    },
+    "gradient6": {
+      "name": "Frame 53",
+      "type": "linear-gradient",
+      "colors": ["#800080", "#4B0082"]
+    },
+    "gradient7": {
+      "name": "Frame 54",
+      "type": "linear-gradient",
+      "colors": ["#87CEEB", "#1E90FF"]
+    },
+    "gradient8": {
+      "name": "Frame 10",
+      "type": "linear-gradient",
+      "colors": ["#FFB6C1", "#FF69B4"]
+    },
+    "gradient9": {
+      "name": "Frame 8",
+      "type": "linear-gradient",
+      "colors": ["#FFC0CB", "#FF69B4"]
+    },
+    "gradient10": {
+      "name": "Frame 67",
+      "type": "linear-gradient",
+      "colors": ["#8B4513", "#A0522D"]
+    },
+    "gradient11": {
+      "name": "G_10",
+      "type": "linear-gradient",
+      "colors": ["#800080", "#4B0082"]
+    },
+    "gradient12": {
+      "name": "G_01",
+      "type": "linear-gradient",
+      "colors": ["#E6E6FA", "#DDA0DD"]
+    },
+    "gradient13": {
+      "name": "Frame 56",
+      "type": "linear-gradient",
+      "colors": ["#98FB98", "#90EE90"]
+    },
+    "gradient14": {
+      "name": "Frame 2",
+      "type": "linear-gradient",
+      "colors": ["#90EE90", "#32CD32"]
+    },
+    "gradient15": {
+      "name": "Frame 1",
+      "type": "linear-gradient",
+      "colors": ["#87CEEB", "#00BFFF"]
+    },
+    "gradient16": {
+      "name": "Frame 36",
+      "type": "linear-gradient",
+      "colors": ["#E6E6FA", "#9370DB"]
+    },
+    "gradient17": {
+      "name": "Frame 50",
+      "type": "linear-gradient",
+      "colors": ["#FFA07A", "#FF7F50"]
+    },
+    "gradient18": {
+      "name": "Frame 55",
+      "type": "linear-gradient",
+      "colors": ["#9400D3", "#800080"]
+    },
+    "gradient19": {
+      "name": "Frame 58",
+      "type": "linear-gradient",
+      "colors": ["#87CEEB", "#1E90FF"]
+    },
+    "gradient20": {
+      "name": "Frame 71",
+      "type": "linear-gradient",
+      "colors": ["#FFB6C1", "#FF69B4"]
+    },
+    "gradient21": {
+      "name": "Frame 4",
+      "type": "linear-gradient",
+      "colors": ["#FFA07A", "#FF7F50"]
+    },
+    "gradient22": {
+      "name": "Frame 65",
+      "type": "linear-gradient",
+      "colors": ["#8B4513", "#A0522D"]
+    },
+    "gradient23": {
+      "name": "G_11",
+      "type": "linear-gradient",
+      "colors": ["#9400D3", "#800080"]
+    },
+    "gradient24": {
+      "name": "G_02",
+      "type": "linear-gradient",
+      "colors": ["#DCDCDC", "#A9A9A9"]
+    },
+    "gradient25": {
+      "name": "Frame 61",
+      "type": "linear-gradient",
+      "colors": ["#E0FFFF", "#B0E0E6"]
+    },
+    "gradient26": {
+      "name": "Frame 19",
+      "type": "linear-gradient",
+      "colors": ["#98FB98", "#90EE90"]
+    },
+    "gradient27": {
+      "name": "Frame 12",
+      "type": "linear-gradient",
+      "colors": ["#DDA0DD", "#BA55D3"]
+    },
+    "gradient28": {
+      "name": "Frame 21",
+      "type": "linear-gradient",
+      "colors": ["#E6E6FA", "#DDA0DD"]
+    },
+    "gradient29": {
+      "name": "Frame 39",
+      "type": "linear-gradient",
+      "colors": ["#FF6347", "#FF4500"]
+    },
+    "gradient30": {
+      "name": "Frame 57",
+      "type": "linear-gradient",
+      "colors": ["#9400D3", "#8B008B"]
+    },
+    "gradient31": {
+      "name": "Frame 45",
+      "type": "linear-gradient",
+      "colors": ["#E0FFFF", "#AFEEEE"]
+    },
+    "gradient32": {
+      "name": "Frame 18",
+      "type": "linear-gradient",
+      "colors": ["#FFDAB9", "#FFE4B5"]
+    },
+    "gradient33": {
+      "name": "Frame 16",
+      "type": "linear-gradient",
+      "colors": ["#FFDAB9", "#FFE4B5"]
+    },
+    "gradient34": {
+      "name": "Frame 63",
+      "type": "linear-gradient",
+      "colors": ["#2F4F4F", "#000080"]
+    },
+    "gradient35": {
+      "name": "G_12",
+      "type": "linear-gradient",
+      "colors": ["#9400D3", "#800080"]
+    },
+    "gradient36": {
+      "name": "G_03",
+      "type": "linear-gradient",
+      "colors": ["#FFB6C1", "#FF69B4"]
+    },
+    "gradient37": {
+      "name": "Frame 5",
+      "type": "linear-gradient",
+      "colors": ["#F0FFF0", "#98FB98"]
+    },
+    "gradient38": {
+      "name": "Frame 24",
+      "type": "linear-gradient",
+      "colors": ["#98FB98", "#32CD32"]
+    },
+    "gradient39": {
+      "name": "Frame 9",
+      "type": "linear-gradient",
+      "colors": ["#DDA0DD", "#BA55D3"]
+    },
+    "gradient40": {
+      "name": "Frame 3",
+      "type": "linear-gradient",
+      "colors": ["#E6E6FA", "#DDA0DD"]
+    },
+    "gradient41": {
+      "name": "Frame 11",
+      "type": "linear-gradient",
+      "colors": ["#FF6347", "#FF4500"]
+    },
+    "gradient42": {
+      "name": "Frame 7",
+      "type": "linear-gradient",
+      "colors": ["#4169E1", "#0000CD"]
+    },
+    "gradient43": {
+      "name": "Frame 38",
+      "type": "linear-gradient",
+      "colors": ["#E0FFFF", "#B0E0E6"]
+    },
+    "gradient44": {
+      "name": "Frame 20",
+      "type": "linear-gradient",
+      "colors": ["#FFDAB9", "#FFE4B5"]
+    },
+    "gradient45": {
+      "name": "Frame 17",
+      "type": "linear-gradient",
+      "colors": ["#FFDAB9", "#FFE4B5"]
+    },
+    "gradient46": {
+      "name": "Frame 60",
+      "type": "linear-gradient",
+      "colors": ["#2F4F4F", "#000080"]
+    },
+    "gradient47": {
+      "name": "G_13",
+      "type": "linear-gradient",
+      "colors": ["#9400D3", "#800080"]
+    },
+    "gradient48": {
+      "name": "G_05",
+      "type": "linear-gradient",
+      "colors": ["#008B8B", "#006400"]
+    },
+    "gradient49": {
+      "name": "Frame 6",
+      "type": "linear-gradient",
+      "colors": ["#FFD700", "#FFA500"]
+    },
+    "gradient50": {
+      "name": "Frame 42",
+      "type": "linear-gradient",
+      "colors": ["#90EE90", "#32CD32"]
+    },
+    "gradient51": {
+      "name": "Frame 22",
+      "type": "linear-gradient",
+      "colors": ["#FFB6C1", "#FF69B4"]
+    },
+    "gradient52": {
+      "name": "Frame 25",
+      "type": "linear-gradient",
+      "colors": ["#DDA0DD", "#BA55D3"]
+    },
+    "gradient53": {
+      "name": "Frame 47",
+      "type": "linear-gradient",
+      "colors": ["#FF6347", "#FF4500"]
+    },
+    "gradient54": {
+      "name": "Frame 52",
+      "type": "linear-gradient",
+      "colors": ["#9400D3", "#800080"]
+    },
+    "gradient55": {
+      "name": "Frame 34",
+      "type": "linear-gradient",
+      "colors": ["#E0FFFF", "#B0E0E6"]
+    },
+    "gradient56": {
+      "name": "Frame 41",
+      "type": "linear-gradient",
+      "colors": ["#FFDAB9", "#FFE4B5"]
+    },
+    "gradient57": {
+      "name": "Frame 31",
+      "type": "linear-gradient",
+      "colors": ["#FFDAB9", "#FFE4B5"]
+    },
+    "gradient58": {
+      "name": "Frame 64",
+      "type": "linear-gradient",
+      "colors": ["#2F4F4F", "#000080"]
+    },
+    "gradient59": {
+      "name": "G_14",
+      "type": "linear-gradient",
+      "colors": ["#9400D3", "#800080"]
+    },
+    "gradient60": {
+      "name": "G_06",
+      "type": "linear-gradient",
+      "colors": ["#FF69B4", "#FF1493"]
+    },
+    "gradient61": {
+      "name": "Frame 14",
+      "type": "linear-gradient",
+      "colors": ["#FFB6C1", "#FFC0CB"]
+    },
+    "gradient62": {
+      "name": "Frame 27",
+      "type": "linear-gradient",
+      "colors": ["#E0FFFF", "#B0E0E6"]
+    },
+    "gradient63": {
+      "name": "Frame 51",
+      "type": "linear-gradient",
+      "colors": ["#FFA500", "#FF8C00"]
+    },
+    "gradient64": {
+      "name": "Frame 30",
+      "type": "linear-gradient",
+      "colors": ["#DDA0DD", "#BA55D3"]
+    },
+    "gradient65": {
+      "name": "Frame 28",
+      "type": "linear-gradient",
+      "colors": ["#E0FFFF", "#B0E0E6"]
+    },
+    "gradient66": {
+      "name": "Frame 15",
+      "type": "linear-gradient",
+      "colors": ["#E6E6FA", "#DDA0DD"]
+    },
+    "gradient67": {
+      "name": "Frame 37",
+      "type": "linear-gradient",
+      "colors": ["#E6E6FA", "#DDA0DD"]
+    },
+    "gradient68": {
+      "name": "Frame 29",
+      "type": "linear-gradient",
+      "colors": ["#E6E6FA", "#DDA0DD"]
+    },
+    "gradient69": {
+      "name": "Frame 26",
+      "type": "linear-gradient",
+      "colors": ["#DDA0DD", "#BA55D3"]
+    },
+    "gradient70": {
+      "name": "Frame 13",
+      "type": "linear-gradient",
+      "colors": ["#F0FFFF", "#E0FFFF"]
+    },
+    "gradient71": {
+      "name": "G_07",
+      "type": "linear-gradient",
+      "colors": ["#9400D3", "#800080"]
+    }
+  }
+}

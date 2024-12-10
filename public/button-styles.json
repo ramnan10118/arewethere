@@ -1,0 +1,39 @@
+{
+  "buttons": {
+    "download": {
+      "text": "Download the app",
+      "backgroundColor": "#27AE60",
+      "textColor": "#FFFFFF",
+      "style": "primary"
+    },
+    "knowMore": {
+      "text": "Know more",
+      "backgroundColor": "#7339E5",
+      "textColor": "#FFFFFF",
+      "style": "secondary"
+    },
+    "learnMore": {
+      "text": "Learn more",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "style": "tertiary"
+    },
+    "checkNow": {
+      "text": "Check now",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#7339E5",
+      "style": "tertiary"
+    },
+    "buyNow": {
+      "text": "Buy now",
+      "backgroundColor": "#000000",
+      "textColor": "#FFFFFF",
+      "style": "primary"
+    }
+  },
+  "metadata": {
+    "version": "1.0",
+    "description": "Button styles with appropriate text colors for optimal contrast",
+    "usage": "Apply backgroundColor to button and textColor to button text"
+  }
+}
