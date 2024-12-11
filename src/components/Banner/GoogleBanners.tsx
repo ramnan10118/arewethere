@@ -183,7 +183,7 @@ function CTAButton({ text, className = '', onClick }: CTAButtonProps) {
           ${className}
         `}
       >
-        {text}
+        <BannerText weight="medium">{text}</BannerText>
       </button>
     );
   }
@@ -195,18 +195,17 @@ function CTAButton({ text, className = '', onClick }: CTAButtonProps) {
         backgroundColor: buttonStyle?.backgroundColor,
         color: buttonStyle?.textColor,
         boxShadow: `0 2px 8px ${buttonStyle?.backgroundColor}80`,
-        transform: 'translateY(-1px)'
+        transform: 'translateY(-1px)',
+        padding: '0'
       }}
       className={`
-        text-sm 
-        font-medium 
         rounded-full 
         transition-all
         duration-150
         ${className}
       `}
     >
-      {text}
+      <BannerText weight="medium">{text}</BannerText>
     </button>
   );
 }
@@ -281,7 +280,7 @@ export function Leaderboard728x90({ logo, title, subtitle, cta }: BannerProps) {
         
         {/* Content Section */}
         <div className="flex-1 flex items-center justify-between pl-6 pr-8">
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-[400px]">
             <BannerText 
               as="h2" 
               weight="semibold"
@@ -301,7 +300,7 @@ export function Leaderboard728x90({ logo, title, subtitle, cta }: BannerProps) {
           </div>
           <CTAButton 
             text={cta}
-            className="ml-4 px-6 h-[36px]"
+            className="ml-4 px-6 h-[36px] whitespace-nowrap min-w-[140px]"
           />
         </div>
       </div>
@@ -590,6 +589,391 @@ export function LeaderboardVariation728x90({ logo, title, subtitle, cta }: Banne
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
         <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-black/5 rounded-full blur-xl" />
+      </div>
+    </div>
+  );
+} 
+
+interface TestimonialBannerProps extends BannerProps {
+  customer: {
+    name: string;
+    role: string;
+    image: string;
+  };
+  quote: string;
+}
+
+// Testimonial Leaderboard (728x90)
+export function TestimonialLeaderboard728x90({ 
+  logo, 
+  title, 
+  subtitle, 
+  cta, 
+  customer = {
+    name: "Priya Sharma",
+    role: "Product Designer",
+    image: "/placeholder-avatar.png"
+  }
+}: TestimonialBannerProps) {
+  const { gradientStyle, isDark, isLoading } = useGradient();
+
+  if (isLoading) {
+    return <div className="w-[728px] h-[90px] animate-pulse bg-gray-200 rounded-lg" />;
+  }
+
+  return (
+    <div style={gradientStyle} className="relative w-[728px] h-[90px] rounded-lg overflow-hidden">
+      <div className="flex h-full items-center">
+        {/* Logo Section */}
+        <div className="w-[120px] h-full flex items-center justify-center border-r border-white/20">
+          <Logo 
+            isDark={isDark} 
+            width={80} 
+            height={40}
+            className="flex items-center justify-center"
+          />
+        </div>
+        
+        {/* Content Section */}
+        <div className="flex-1 flex items-center justify-between pl-6 pr-8">
+          <div className="flex flex-col max-w-[400px]">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="relative w-[28px] h-[28px] rounded-full overflow-hidden bg-white/10 flex-shrink-0">
+                <Image
+                  src={customer.image}
+                  alt={customer.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <BannerText 
+                  as="span" 
+                  weight="semibold"
+                  className={`text-[14px] ${isDark ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {customer.name}
+                </BannerText>
+                <span className={`text-[12px] ${isDark ? 'text-white/70' : 'text-gray-600'}`}>•</span>
+                <BannerText 
+                  as="span"
+                  weight="regular"
+                  className={`text-[12px] ${isDark ? 'text-white/70' : 'text-gray-600'}`}
+                >
+                  {customer.role}
+                </BannerText>
+              </div>
+            </div>
+            <BannerText 
+              as="p"
+              weight="regular"
+              className={`text-[13px] leading-snug ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+            >
+              "{subtitle}"
+            </BannerText>
+          </div>
+
+          <CTAButton 
+            text={cta}
+            className="ml-4 px-6 h-[36px] whitespace-nowrap min-w-[140px]"
+          />
+        </div>
+      </div>
+    </div>
+  );
+} 
+
+// Instagram Square (1080x1080)
+export function InstagramSquare1080({ logo, title, subtitle, cta }: BannerProps) {
+  const { gradientStyle, isDark, isLoading } = useGradient();
+
+  if (isLoading) {
+    return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
+  }
+
+  return (
+    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+      {/* Logo Section - Spans full width */}
+      <div className="absolute top-0 left-0 right-0 p-8 z-10">
+        <Logo 
+          isDark={isDark} 
+          width={80} 
+          height={24}
+        />
+      </div>
+
+      <div className="flex h-full">
+        {/* Left Side - Image */}
+        <div className="w-[250px] h-full relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10" />
+          <Image
+            src="/images/AckoGarage.png"
+            alt="Acko Garage"
+            fill
+            className="object-cover object-left-top scale-125"
+            style={{ objectPosition: '60% top' }}
+            priority
+          />
+        </div>
+        
+        {/* Right Side - Content */}
+        <div className="flex-1 flex flex-col pt-24 p-8 relative">
+          {/* Optional gradient overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/10" />
+          
+          {/* Content Section */}
+          <div className="flex flex-col h-full relative z-10">
+            {/* Text Content */}
+            <div className="flex-1 flex flex-col pt-8">
+              <div className="w-[200px]">
+                <BannerText 
+                  as="h2"
+                  weight="semibold"
+                  className={`text-[30px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {title}
+                </BannerText>
+              </div>
+              {subtitle && (
+                <BannerText 
+                  as="p"
+                  weight="regular"
+                  className={`text-[18px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+                >
+                  {subtitle}
+                </BannerText>
+              )}
+            </div>
+
+            {/* CTA Button - Pushed to bottom */}
+            <div className="mt-auto">
+              <CTAButton 
+                text={cta}
+                className="w-full h-[40px] !text-[16px]"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+} 
+
+// Instagram Square Flipped (1080x1080)
+export function InstagramSquare1080Flipped({ logo, title, subtitle, cta }: BannerProps) {
+  const { gradientStyle, isDark, isLoading } = useGradient();
+
+  if (isLoading) {
+    return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
+  }
+
+  return (
+    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+      {/* Logo Section - Spans full width */}
+      <div className="absolute top-0 left-0 right-0 p-8 z-10">
+        <Logo 
+          isDark={isDark} 
+          width={80} 
+          height={24}
+        />
+      </div>
+
+      <div className="flex h-full">
+        {/* Left Side - Content */}
+        <div className="w-[250px] flex flex-col pt-24 p-8 relative">
+          {/* Optional gradient overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10" />
+          
+          {/* Content Section */}
+          <div className="flex flex-col h-full relative z-10">
+            {/* Text Content */}
+            <div className="flex-1 flex flex-col pt-8">
+              <BannerText 
+                as="h2"
+                weight="semibold"
+                className={`text-[28px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              >
+                {title}
+              </BannerText>
+              {subtitle && (
+                <BannerText 
+                  as="p"
+                  weight="regular"
+                  className={`text-[16px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+                >
+                  {subtitle}
+                </BannerText>
+              )}
+            </div>
+
+            {/* CTA Button - Pushed to bottom */}
+            <div className="mt-auto">
+              <CTAButton 
+                text={cta}
+                className="w-full h-[40px] !text-[16px]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side - Image */}
+        <div className="flex-1 relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10" />
+          <Image
+            src="/images/AckoGarage.png"
+            alt="Acko Garage"
+            fill
+            className="object-cover object-center scale-125"
+            style={{ objectPosition: '40% top' }}
+            priority
+          />
+        </div>
+      </div>
+    </div>
+  );
+} 
+
+// Instagram Square with Floating Image (1080x1080)
+export function InstagramSquare1080Float({ logo, title, subtitle, cta }: BannerProps) {
+  const { gradientStyle, isDark, isLoading } = useGradient();
+
+  if (isLoading) {
+    return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
+  }
+
+  return (
+    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+      {/* Grid Container */}
+      <div className="h-full grid grid-rows-2">
+        {/* Top Grid - Logo, Title, Subtitle */}
+        <div className="p-8">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <Logo 
+              isDark={isDark} 
+              width={80} 
+              height={24}
+            />
+          </div>
+          
+          {/* Text Content - Positioned to work with floating image */}
+          <div className="relative z-20 mt-10 max-w-[90%]">
+            <div className="max-w-[85%]">
+              <BannerText 
+                as="h2"
+                weight="semibold"
+                className={`text-[36px] leading-tight mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              >
+                {title}
+              </BannerText>
+            </div>
+            {subtitle && (
+              <BannerText 
+                as="p"
+                weight="regular"
+                className={`text-[18px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+              >
+                {subtitle}
+              </BannerText>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Grid Container */}
+        <div className="grid grid-cols-2">
+          {/* Bottom Left - CTA */}
+          <div className="flex items-center justify-start p-8">
+            <CTAButton 
+              text={cta}
+              className="w-full !px-4 h-[40px] !text-[16px]"
+            />
+          </div>
+
+          {/* Bottom Right - Image */}
+          <div className="relative overflow-hidden">
+            <div className="absolute right-[-45%] top-[-40%] w-[150%] h-[150%]">
+              <Image
+                src="/images/car/cars/Car_15.png"
+                alt="Car"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+} 
+
+// Instagram Square with Character (1080x1080)
+export function InstagramSquare1080Character({ logo, title, subtitle, cta }: BannerProps) {
+  const { gradientStyle, isDark, isLoading } = useGradient();
+
+  if (isLoading) {
+    return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
+  }
+
+  return (
+    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+      {/* Grid Container */}
+      <div className="h-full grid grid-rows-2">
+        {/* Top Grid - Logo, Title, Subtitle */}
+        <div className="p-8">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <Logo 
+              isDark={isDark} 
+              width={80} 
+              height={24}
+            />
+          </div>
+          
+          {/* Title and Subtitle */}
+          <div className="max-w-[80%]">
+            <BannerText 
+              as="h2"
+              weight="semibold"
+              className={`text-[36px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
+            >
+              {title}
+            </BannerText>
+            {subtitle && (
+              <BannerText 
+                as="p"
+                weight="regular"
+                className={`text-[18px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+              >
+                {subtitle}
+              </BannerText>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Grid Container */}
+        <div className="grid grid-cols-2">
+          {/* Bottom Left - CTA */}
+          <div className="flex items-center justify-start p-8">
+            <CTAButton 
+              text={cta}
+              className="w-full !px-4 h-[40px] !text-[16px]"
+            />
+          </div>
+
+          {/* Bottom Right - Image */}
+          <div className="relative overflow-hidden">
+            <div className="absolute right-[-35%] top-[-03%] w-[140%] h-[140%]">
+              <Image
+                src="/images/car/character/character3.png"
+                alt="Character"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

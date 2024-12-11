@@ -84,6 +84,14 @@ export async function generateBannerCopy(prompt: string): Promise<BannerSizes> {
 
     try {
       const bannerCopy: BannerSizes = JSON.parse(jsonContent);
+      
+      // Validate CTAs are exactly 2 words
+      Object.values(bannerCopy).forEach(copy => {
+        if (!copy.cta || copy.cta.trim().split(/\s+/).length !== 2) {
+          copy.cta = "Get Started"; // Fallback to default if invalid
+        }
+      });
+      
       return bannerCopy;
     } catch (parseError) {
       console.error('Error parsing Claude response:', parseError);
