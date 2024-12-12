@@ -14,6 +14,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@ai-sdk/openai": "^1.0.8",
     "@anthropic-ai/sdk": "^0.32.1",
     "@types/node": "latest",
     "@types/react": "latest",
@@ -21,11 +22,14 @@
     "ai": "^4.0.14",
     "autoprefixer": "latest",
     "eslint": "latest",
+    "eventsource-parser": "^3.0.0",
+    "html-to-image": "^1.11.11",
     "next": "latest",
     "openai": "^4.76.1",
     "postcss": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-masonry-css": "^1.0.16",
     "tailwindcss": "latest",
     "typescript": "latest"
   }
