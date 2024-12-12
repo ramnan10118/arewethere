@@ -510,6 +510,26 @@ export default function ChatInterface() {
     return bannerOrder.map(i => bannerComponents[i]);
   };
 
+  // Add this function to handle remix
+  const handleRemix = () => {
+    const modalContent = document.querySelector('.modal-content') as HTMLElement;
+    if (modalContent) {
+      // Force a re-render of just the preview content
+      const clone = selectedBanner?.component;
+      setSelectedBanner(prev => prev ? {
+        ...prev,
+        component: null // Clear it first
+      } : null);
+      // Set it back immediately to trigger re-render with new random styles
+      setTimeout(() => {
+        setSelectedBanner(prev => prev ? {
+          ...prev,
+          component: clone
+        } : null);
+      }, 0);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-[#2A2B3B]">
       {/* Left Panel - Controls */}
@@ -678,7 +698,7 @@ export default function ChatInterface() {
           <div className="fixed inset-0 flex items-center justify-center p-4">
             <div 
               className={`
-                w-full max-w-3xl
+                w-full max-w-fit
                 bg-[#2A2B3B]/90 backdrop-blur-sm
                 rounded-2xl p-8
                 shadow-[0_0_50px_0_rgba(0,0,0,0.3)]
@@ -715,7 +735,7 @@ export default function ChatInterface() {
                              transition-all duration-200 ease-out
                              shadow-lg shadow-purple-500/30
                              focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                  onClick={() => {/* Add remix functionality */}}
+                  onClick={handleRemix}
                 >
                   Remix
                 </button>
