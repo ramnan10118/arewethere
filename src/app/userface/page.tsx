@@ -176,19 +176,57 @@ export default function ChatInterface() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-[#2A2B3B]">
       {/* Left Panel - Controls */}
-      <div className="w-[25%] bg-white border-r p-6 sticky top-0 h-screen overflow-y-auto">
-        <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Banner Generator</h1>
-          
-          <div className="space-y-4">
+      <div className="w-[25%] p-6 h-screen overflow-y-auto">
+        <div className="space-y-8">
+          <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+              <label className="block text-xl font-medium text-white mb-3">Theme</label>
+              <select 
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+                className="w-full p-4 bg-[#363748] text-white rounded-2xl
+                          border-0 focus:ring-0 focus:outline-none
+                          appearance-none cursor-pointer
+                          [&>*]:py-3 [&>*]:px-4
+                          [&>option]:bg-[#424359]
+                          [&>option:checked]:bg-blue-500
+                          [&>option:hover]:bg-blue-500/50"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 1rem center',
+                  backgroundSize: '1.5em'
+                }}
+              >
+                <option value="fomo">Fomo</option>
+                <option value="urgency">Urgency</option>
+                <option value="exclusivity">Exclusivity</option>
+                <option value="value">Value</option>
+                <option value="trust">Trust</option>
+                <option value="community">Community</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xl font-medium text-white mb-3">Language</label>
               <select 
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="w-full p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-4 bg-[#363748] text-white rounded-2xl
+                          border-0 focus:ring-0 focus:outline-none
+                          appearance-none cursor-pointer
+                          [&>*]:py-3 [&>*]:px-4
+                          [&>option]:bg-[#424359]
+                          [&>option:checked]:bg-blue-500
+                          [&>option:hover]:bg-blue-500/50"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 1rem center',
+                  backgroundSize: '1.5em'
+                }}
               >
                 <option value="english">English</option>
                 <option value="hindi">Hindi</option>
@@ -199,65 +237,57 @@ export default function ChatInterface() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Theme</label>
-              <select 
-                value={theme}
-                onChange={(e) => setTheme(e.target.value)}
-                className="w-full p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="fomo">FOMO</option>
-                <option value="urgency">Urgency</option>
-                <option value="exclusivity">Exclusivity</option>
-                <option value="value">Value</option>
-                <option value="trust">Trust</option>
-                <option value="community">Community</option>
-              </select>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Banner Topic</label>
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Enter banner topic..."
-                  className="w-full p-3 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Type something..."
+                  className="w-full p-4 bg-[#363748] text-white rounded-2xl
+                            border-0 focus:ring-0 focus:outline-none
+                            placeholder-gray-400"
                   disabled={isLoading}
                 />
               </div>
               
-              <button 
-                type="submit"
-                className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    <span>Generating...</span>
-                  </div>
-                ) : (
-                  'Generate Banners'
-                )}
-              </button>
+              <div className="flex justify-center">
+                <button 
+                  type="submit"
+                  className="w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 
+                            text-white text-lg font-medium rounded-2xl
+                            hover:from-purple-600 hover:to-pink-600
+                            focus:outline-none
+                            disabled:opacity-50 disabled:cursor-not-allowed 
+                            transition-all duration-200"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>Generating...</span>
+                    </div>
+                  ) : (
+                    'Generate'
+                  )}
+                </button>
+              </div>
             </form>
           </div>
         </div>
       </div>
 
       {/* Right Panel - Banner Display */}
-      <div className="flex-1 p-6 overflow-y-auto bg-gray-50">
+      <div className="flex-1 p-6 overflow-y-auto bg-[#2A2B3B]">
         {!response && (
           <div className="h-full flex items-center justify-center">
             <div className="text-center">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              <h2 className="text-xl font-semibold text-gray-200 mb-2">
                 Ready to Generate Banners
               </h2>
-              <p className="text-gray-500">
+              <p className="text-gray-400">
                 Enter a topic in the left panel to generate multiple banner variations.
               </p>
             </div>
@@ -267,10 +297,10 @@ export default function ChatInterface() {
         {response?.banners.map((banner, i) => (
           <div key={i} className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-200">
                 Banner Variation {i + 1}
                 {isStreaming && (
-                  <span className="ml-2 text-sm font-normal text-blue-500 animate-pulse">
+                  <span className="ml-2 text-sm font-normal text-blue-400 animate-pulse">
                     Generating...
                   </span>
                 )}
