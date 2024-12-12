@@ -8,11 +8,15 @@ import {
   Skyscraper160x600, 
   LargeRectangle336x280, 
   InstagramStory1080x1920,
-  TestimonialLeaderboard728x90,
+  BackgroundLeaderboard728x90,
   InstagramSquare1080,
   InstagramSquare1080Flipped,
   InstagramSquare1080Float,
-  InstagramSquare1080Character
+  InstagramSquare1080Character,
+  InstagramSquare1080Background,
+  InstagramSquare1080Testimonial,
+  ComparisonBanner1080,
+  FeatureMatrixBanner1080
 } from '../../components/Banner/GoogleBanners';
 import { generateBannerCopy } from '../../utils/claudeApi';
 
@@ -55,32 +59,8 @@ export default function Page() {
   };
 
   return (
-    <main className="min-h-screen flex">
-      {/* Left Side - Form (30%) */}
-      {/* 
-      <div className="w-[30%] h-screen sticky top-0 p-8 border-r bg-white">
-        <h1 className="text-2xl font-bold mb-8">Banner Generator</h1>
-        <form onSubmit={handlePromptSubmit} className="space-y-4">
-          <input 
-            type="text" 
-            name="prompt" 
-            placeholder="Enter your prompt..."
-            className="w-full p-4 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            disabled={isLoading}
-          />
-          <button 
-            type="submit" 
-            disabled={isLoading}
-            className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors
-              disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Generating...' : 'Generate'}
-          </button>
-        </form>
-      </div>
-      */}
-
-      {/* Right Side - Banners (70%) */}
+    <main className="min-h-screen">
+      {/* Banners */}
       <div className="w-full p-8 overflow-y-auto">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
           {/* Original Banner */}
@@ -96,16 +76,40 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Floating Image Banner */}
-        <div className="flex flex-col items-center">
-          <h2 className="text-base font-semibold mb-4">Instagram Square - Floating Style</h2>
-          <InstagramSquare1080Float {...bannerProps} />
+        {/* Floating and Character Banners Side by Side */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+          <div className="flex flex-col items-center">
+            <h2 className="text-base font-semibold mb-4">Instagram Square - Character Style</h2>
+            <InstagramSquare1080Character {...bannerProps} />
+          </div>
+          <div className="flex flex-col items-center">
+            <h2 className="text-base font-semibold mb-4">Instagram Square - Float Style</h2>
+            <InstagramSquare1080Float {...bannerProps} />
+          </div>
         </div>
 
-        {/* Character Banner */}
-        <div className="flex flex-col items-center">
-          <h2 className="text-base font-semibold mb-4">Instagram Square - Character Style</h2>
-          <InstagramSquare1080Character {...bannerProps} />
+        {/* Background and Testimonial Banners Side by Side */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+          <div className="flex flex-col items-center">
+            <h2 className="text-base font-semibold mb-4">Instagram Square - Background</h2>
+            <InstagramSquare1080Background {...bannerProps} />
+          </div>
+          <div className="flex flex-col items-center">
+            <h2 className="text-base font-semibold mb-4">Instagram Square - Testimonial</h2>
+            <InstagramSquare1080Testimonial {...bannerProps} />
+          </div>
+        </div>
+
+        {/* Comparison Banners */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+          <div className="flex flex-col items-center">
+            <h2 className="text-base font-semibold mb-4">Instagram Square - Comparison</h2>
+            <ComparisonBanner1080 {...bannerProps} />
+          </div>
+          <div className="flex flex-col items-center">
+            <h2 className="text-base font-semibold mb-4">Instagram Square - Feature Matrix</h2>
+            <FeatureMatrixBanner1080 {...bannerProps} />
+          </div>
         </div>
       </div>
     </main>
