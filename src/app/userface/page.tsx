@@ -276,7 +276,7 @@ export default function ChatInterface() {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input, language, theme }),
+        body: JSON.stringify({ prompt: input, language, theme, lob }),
       })
 
       const reader = res.body?.getReader()
@@ -338,6 +338,15 @@ export default function ChatInterface() {
     { value: 'trust', label: 'Trust' },
     { value: 'community', label: 'Community' }
   ];
+
+  const lobOptions = [
+    { value: 'health', label: 'Health' },
+    { value: 'life', label: 'Life' },
+    { value: 'ackodrive', label: 'AckoDrive' },
+    { value: 'auto', label: 'Auto' }
+  ];
+
+  const [lob, setLob] = useState('auto')
 
   const handleBannerClick = (component: ReactNode, title: string) => {
     setSelectedBanner({ component, title })
@@ -536,6 +545,7 @@ export default function ChatInterface() {
       <div className="w-[25%] p-6 h-screen overflow-y-auto">
         <div className="h-full flex items-center">
           <div className="w-full space-y-8">
+            {/* First row of dropdowns */}
             <div className="grid grid-cols-2 gap-4">
               <CustomDropdown
                 label="Language"
@@ -552,6 +562,17 @@ export default function ChatInterface() {
               />
             </div>
 
+            {/* LOB dropdown in its own row */}
+            <div className="w-full">
+              <CustomDropdown
+                label="LOB"
+                options={lobOptions}
+                value={lob}
+                onChange={setLob}
+              />
+            </div>
+
+            {/* Input form */}
             <form onSubmit={handleSubmit}>
               <div className="relative bg-[#363748] rounded-2xl p-6">
                 <textarea
