@@ -44,9 +44,10 @@ function PreviewModal({ isOpen, onClose, children }: PreviewModalProps) {
 type BannerGridProps = {
   banner: Banner
   isStreaming: boolean
+  selectedLOB?: string
 }
 
-export default function BannerGrid({ banner, isStreaming }: BannerGridProps) {
+export default function BannerGrid({ banner, isStreaming, selectedLOB = 'auto' }: BannerGridProps) {
   const [previewBanner, setPreviewBanner] = useState<React.ReactNode | null>(null);
 
   const handlePreview = (bannerComponent: React.ReactNode) => {
@@ -100,6 +101,7 @@ export default function BannerGrid({ banner, isStreaming }: BannerGridProps) {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
+              lob={selectedLOB}
             />
           )}
         >
@@ -107,6 +109,7 @@ export default function BannerGrid({ banner, isStreaming }: BannerGridProps) {
             title={banner.content.headline}
             subtitle={banner.content.description}
             cta={banner.content.ctaText}
+            lob={selectedLOB}
           />
         </BannerCard>
 
@@ -118,6 +121,7 @@ export default function BannerGrid({ banner, isStreaming }: BannerGridProps) {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
+              lob={selectedLOB}
             />
           )}
         >
@@ -125,6 +129,7 @@ export default function BannerGrid({ banner, isStreaming }: BannerGridProps) {
             title={banner.content.headline}
             subtitle={banner.content.description}
             cta={banner.content.ctaText}
+            lob={selectedLOB}
           />
         </BannerCard>
 
@@ -154,6 +159,7 @@ export default function BannerGrid({ banner, isStreaming }: BannerGridProps) {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
+              lob={selectedLOB}
             />
           )}
         >
@@ -161,6 +167,7 @@ export default function BannerGrid({ banner, isStreaming }: BannerGridProps) {
             title={banner.content.headline}
             subtitle={banner.content.description}
             cta={banner.content.ctaText}
+            lob={selectedLOB}
           />
         </BannerCard>
 

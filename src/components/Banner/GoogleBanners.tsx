@@ -697,8 +697,12 @@ export function BackgroundLeaderboard728x90({
 } 
 
 // Instagram Square (1080x1080)
-export function InstagramSquare1080({ logo, title, subtitle, cta }: BannerProps) {
+export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+
+  useEffect(() => {
+    console.log('Square Current LOB:', lob); // Debug log
+  }, [lob]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
@@ -847,8 +851,56 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta }: Banne
 } 
 
 // Instagram Square with Floating Image (1080x1080)
-export function InstagramSquare1080Float({ logo, title, subtitle, cta }: BannerProps) {
+export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  const [floatImage, setFloatImage] = useState('/images/auto/cars/Car_1.png');
+
+  useEffect(() => {
+    console.log('Float Current LOB:', lob); // Debug log
+    
+    // Get all available float images for the selected LOB
+    const getFloatImages = () => {
+      const autoImages = [
+        '/images/auto/cars/Car_1.png',
+        '/images/auto/cars/Car_2.png',
+        '/images/auto/cars/Car_3.png',
+        '/images/auto/cars/Car_4.png',
+        '/images/auto/cars/Car_5.png',
+        '/images/auto/cars/Car_6.png',
+        '/images/auto/cars/Car_7.png',
+        '/images/auto/cars/Car_8.png',
+        '/images/auto/cars/Car_9.png',
+        '/images/auto/cars/Car_10.png'
+      ];
+
+      const healthImages = [
+        '/images/health/medicine/Medicine_01.png',
+        '/images/health/medicine/Medicine_02.png',
+        '/images/health/medicine/Medicine_03.png'
+      ];
+
+      // Return images based on LOB
+      console.log('Float selecting images for LOB:', lob.toLowerCase());
+      
+      switch(lob.toLowerCase()) {
+        case 'auto':
+          console.log('Selected auto images');
+          return autoImages;
+        case 'health':
+          console.log('Selected health images');
+          return healthImages;
+        default:
+          console.log('Selected default (auto) images');
+          return autoImages;
+      }
+    };
+
+    // Get random float image from the available ones
+    const images = getFloatImages();
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+    console.log('Selected random float image:', randomImage);
+    setFloatImage(randomImage);
+  }, [lob]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
@@ -906,8 +958,8 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta }: BannerP
           <div className="relative overflow-hidden">
             <div className="absolute right-[-45%] top-[-40%] w-[150%] h-[150%]">
               <Image
-                src="/images/car/cars/Car_15.png"
-                alt="Car"
+                src={floatImage}
+                alt={lob === 'auto' ? "Car" : "Medicine"}
                 fill
                 className="object-contain"
                 priority
@@ -921,8 +973,61 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta }: BannerP
 } 
 
 // Instagram Square with Character (1080x1080)
-export function InstagramSquare1080Character({ logo, title, subtitle, cta }: BannerProps) {
+export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  const [characterImage, setCharacterImage] = useState('/images/auto/character/character1.png');
+
+  useEffect(() => {
+    console.log('Current LOB:', lob); // Debug log for current LOB
+    
+    // Get all available character images for the selected LOB
+    const getCharacterImages = () => {
+      const autoCharacters = [
+        '/images/auto/character/character1.png',
+        '/images/auto/character/character2.png',
+        '/images/auto/character/character3.png',
+        '/images/auto/character/character4.png',
+        '/images/auto/character/character5.png'
+      ];
+
+      const healthCharacters = [
+        '/images/health/characters/character1.png',
+        '/images/health/characters/character2.png',
+        '/images/health/characters/character3.png',
+        '/images/health/characters/character4.png',
+        '/images/health/characters/character5.png',
+        '/images/health/characters/character6.png',
+        '/images/health/characters/character7.png'
+      ];
+
+      // Return images based on LOB
+      console.log('Selecting images for LOB:', lob.toLowerCase()); // Debug log for LOB being used in switch
+      
+      switch(lob.toLowerCase()) {
+        case 'auto':
+          console.log('Selected auto characters'); // Debug log for auto selection
+          return autoCharacters;
+        case 'health':
+          console.log('Selected health characters'); // Debug log for health selection
+          return healthCharacters;
+        case 'life':
+          console.log('Selected life character'); // Debug log for life selection
+          return ['/images/life/character/character1.png']; // Placeholder for life
+        case 'ackodrive':
+          console.log('Selected ackodrive character'); // Debug log for ackodrive selection
+          return ['/images/ackodrive/character/character1.png']; // Placeholder for ackodrive
+        default:
+          console.log('Selected default (auto) characters'); // Debug log for default case
+          return autoCharacters;
+      }
+    };
+
+    // Get random character image from the available ones
+    const images = getCharacterImages();
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+    console.log('Selected random image:', randomImage); // Debug log for selected image
+    setCharacterImage(randomImage);
+  }, [lob]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
@@ -978,7 +1083,7 @@ export function InstagramSquare1080Character({ logo, title, subtitle, cta }: Ban
           <div className="relative overflow-hidden">
             <div className="absolute right-[-35%] top-[-03%] w-[140%] h-[140%]">
               <Image
-                src="/images/car/character/character3.png"
+                src={characterImage}
                 alt="Character"
                 fill
                 className="object-contain"
@@ -1102,8 +1207,49 @@ export function InstagramSquare1080Testimonial({
 } 
 
 // Instagram Square with Background (1080x1080)
-export function InstagramSquare1080Background({ logo, title, subtitle, cta }: BannerProps) {
+export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
   const { isDark, isLoading } = useGradient();
+  const [backgroundImage, setBackgroundImage] = useState('/images/auto/background/background_1.png');
+
+  useEffect(() => {
+    console.log('Background Current LOB:', lob); // Debug log
+    
+    // Get all available background images for the selected LOB
+    const getBackgroundImages = () => {
+      const autoBackgrounds = [
+        '/images/auto/background/background_1.png',
+        '/images/auto/background/background_2.png',
+        '/images/auto/background/background_3.png',
+        '/images/auto/background/background_4.png'
+      ];
+
+      const healthBackgrounds = [
+        '/images/health/background/Background_1.png',
+        '/images/health/background/Background_2.png'
+      ];
+
+      // Return images based on LOB
+      console.log('Background selecting images for LOB:', lob.toLowerCase());
+      
+      switch(lob.toLowerCase()) {
+        case 'auto':
+          console.log('Selected auto backgrounds');
+          return autoBackgrounds;
+        case 'health':
+          console.log('Selected health backgrounds');
+          return healthBackgrounds;
+        default:
+          console.log('Selected default (auto) backgrounds');
+          return autoBackgrounds;
+      }
+    };
+
+    // Get random background image from the available ones
+    const images = getBackgroundImages();
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+    console.log('Selected random background:', randomImage);
+    setBackgroundImage(randomImage);
+  }, [lob]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
@@ -1114,8 +1260,8 @@ export function InstagramSquare1080Background({ logo, title, subtitle, cta }: Ba
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/background/health/Background1.png"
-          alt="Background"
+          src={backgroundImage}
+          alt={`${lob.toUpperCase()} Background`}
           fill
           className="object-cover"
           priority

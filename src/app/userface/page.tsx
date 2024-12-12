@@ -219,7 +219,14 @@ export default function ChatInterface() {
   const [selectedBanner, setSelectedBanner] = useState<SelectedBanner | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [bannerOrder, setBannerOrder] = useState<number[]>([0, 1, 2, 3, 4, 5]);
-  
+  const [lob, setLob] = useState('auto');
+  const [selectedLOB, setSelectedLOB] = useState('auto');
+
+  // Update selectedLOB when lob changes
+  useEffect(() => {
+    setSelectedLOB(lob);
+  }, [lob]);
+
   // Move handleClose inside the component
   const handleClose = () => {
     setIsClosing(true)
@@ -346,8 +353,6 @@ export default function ChatInterface() {
     { value: 'auto', label: 'Auto' }
   ];
 
-  const [lob, setLob] = useState('auto')
-
   const handleBannerClick = (component: ReactNode, title: string) => {
     setSelectedBanner({ component, title })
     setIsModalOpen(true)
@@ -437,6 +442,7 @@ export default function ChatInterface() {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
+              lob={selectedLOB}
             />,
             'Float Instagram Banner'
           )}
@@ -445,6 +451,7 @@ export default function ChatInterface() {
             title={banner.content.headline}
             subtitle={banner.content.description}
             cta={banner.content.ctaText}
+            lob={selectedLOB}
           />
         </div>
       </div>,
@@ -459,6 +466,7 @@ export default function ChatInterface() {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
+              lob={selectedLOB}
             />,
             'Character Instagram Banner'
           )}
@@ -467,6 +475,7 @@ export default function ChatInterface() {
             title={banner.content.headline}
             subtitle={banner.content.description}
             cta={banner.content.ctaText}
+            lob={selectedLOB}
           />
         </div>
       </div>,
@@ -503,6 +512,7 @@ export default function ChatInterface() {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
+              
             />,
             'Background Instagram Banner'
           )}
@@ -511,6 +521,7 @@ export default function ChatInterface() {
             title={banner.content.headline}
             subtitle={banner.content.description}
             cta={banner.content.ctaText}
+            lob={selectedLOB}
           />
         </div>
       </div>

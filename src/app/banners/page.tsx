@@ -33,6 +33,7 @@ export default function Page() {
     cta: "Get Started",
     gradientStyle
   });
+  const [selectedLOB, setSelectedLOB] = useState('auto');
 
   const handlePromptSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -80,23 +81,32 @@ export default function Page() {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
           <div className="flex flex-col items-center">
             <h2 className="text-base font-semibold mb-4">Instagram Square - Character Style</h2>
-            <InstagramSquare1080Character {...bannerProps} />
+            <InstagramSquare1080Character 
+              {...bannerProps} 
+              lob={selectedLOB}
+            />
           </div>
           <div className="flex flex-col items-center">
             <h2 className="text-base font-semibold mb-4">Instagram Square - Float Style</h2>
-            <InstagramSquare1080Float {...bannerProps} />
+            <InstagramSquare1080Float 
+              {...bannerProps} 
+              lob={selectedLOB}
+            />
           </div>
         </div>
 
-        {/* Background and Testimonial Banners Side by Side */}
+        {/* Testimonial and Background Banners Side by Side */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
           <div className="flex flex-col items-center">
-            <h2 className="text-base font-semibold mb-4">Instagram Square - Background</h2>
-            <InstagramSquare1080Background {...bannerProps} />
+            <h2 className="text-base font-semibold mb-4">Instagram Square - Testimonial Style</h2>
+            <InstagramSquare1080Testimonial {...bannerProps} />
           </div>
           <div className="flex flex-col items-center">
-            <h2 className="text-base font-semibold mb-4">Instagram Square - Testimonial</h2>
-            <InstagramSquare1080Testimonial {...bannerProps} />
+            <h2 className="text-base font-semibold mb-4">Instagram Square - Background Style</h2>
+            <InstagramSquare1080Background 
+              {...bannerProps} 
+              lob={selectedLOB}
+            />
           </div>
         </div>
 
