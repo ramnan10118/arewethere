@@ -218,6 +218,7 @@ export default function ChatInterface() {
   const [isClosing, setIsClosing] = useState(false)
   const [selectedBanner, setSelectedBanner] = useState<SelectedBanner | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [bannerOrder, setBannerOrder] = useState<number[]>([0, 1, 2, 3, 4, 5]);
   
   // Move handleClose inside the component
   const handleClose = () => {
@@ -262,6 +263,11 @@ export default function ChatInterface() {
     e.preventDefault()
     setIsLoading(true)
     setIsStreaming(true)
+    
+    // Shuffle banner order
+    const newOrder = [...bannerOrder].sort(() => Math.random() - 0.5);
+    setBannerOrder(newOrder);
+    
     setResponse({ 
       banners: [DEFAULT_BANNER, DEFAULT_BANNER] 
     })
@@ -364,6 +370,145 @@ export default function ChatInterface() {
       }
     }
   }
+
+  // Update renderBanners to return an array
+  const renderBanners = (banner: Banner, index: number) => {
+    const bannerComponents = [
+      // Standard Instagram
+      <div className="mb-4" key="standard">
+        <div 
+          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+          ref={setRef(instagramRefs, index)}
+          onClick={() => handleBannerClick(
+            <InstagramSquare1080
+              title={banner.content.headline}
+              subtitle={banner.content.description}
+              cta={banner.content.ctaText}
+            />,
+            'Standard Instagram Banner'
+          )}
+        >
+          <InstagramSquare1080
+            title={banner.content.headline}
+            subtitle={banner.content.description}
+            cta={banner.content.ctaText}
+          />
+        </div>
+      </div>,
+
+      // Flipped Instagram
+      <div className="mb-4" key="flipped">
+        <div 
+          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+          ref={setRef(instagramFlippedRefs, index)}
+          onClick={() => handleBannerClick(
+            <InstagramSquare1080Flipped
+              title={banner.content.headline}
+              subtitle={banner.content.description}
+              cta={banner.content.ctaText}
+            />,
+            'Flipped Instagram Banner'
+          )}
+        >
+          <InstagramSquare1080Flipped
+            title={banner.content.headline}
+            subtitle={banner.content.description}
+            cta={banner.content.ctaText}
+          />
+        </div>
+      </div>,
+
+      // Float Instagram
+      <div className="mb-4" key="float">
+        <div 
+          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+          ref={setRef(instagramFloatRefs, index)}
+          onClick={() => handleBannerClick(
+            <InstagramSquare1080Float
+              title={banner.content.headline}
+              subtitle={banner.content.description}
+              cta={banner.content.ctaText}
+            />,
+            'Float Instagram Banner'
+          )}
+        >
+          <InstagramSquare1080Float
+            title={banner.content.headline}
+            subtitle={banner.content.description}
+            cta={banner.content.ctaText}
+          />
+        </div>
+      </div>,
+
+      // Character Instagram
+      <div className="mb-4" key="character">
+        <div 
+          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+          ref={setRef(instagramCharacterRefs, index)}
+          onClick={() => handleBannerClick(
+            <InstagramSquare1080Character
+              title={banner.content.headline}
+              subtitle={banner.content.description}
+              cta={banner.content.ctaText}
+            />,
+            'Character Instagram Banner'
+          )}
+        >
+          <InstagramSquare1080Character
+            title={banner.content.headline}
+            subtitle={banner.content.description}
+            cta={banner.content.ctaText}
+          />
+        </div>
+      </div>,
+
+      // Testimonial Instagram
+      <div className="mb-4" key="testimonial">
+        <div 
+          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+          ref={setRef(instagramTestimonialRefs, index)}
+          onClick={() => handleBannerClick(
+            <InstagramSquare1080Testimonial
+              title={banner.content.headline}
+              subtitle={banner.content.description}
+              cta={banner.content.ctaText}
+            />,
+            'Testimonial Instagram Banner'
+          )}
+        >
+          <InstagramSquare1080Testimonial
+            title={banner.content.headline}
+            subtitle={banner.content.description}
+            cta={banner.content.ctaText}
+          />
+        </div>
+      </div>,
+
+      // Background Instagram
+      <div className="mb-4" key="background">
+        <div 
+          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+          ref={setRef(instagramBackgroundRefs, index)}
+          onClick={() => handleBannerClick(
+            <InstagramSquare1080Background
+              title={banner.content.headline}
+              subtitle={banner.content.description}
+              cta={banner.content.ctaText}
+            />,
+            'Background Instagram Banner'
+          )}
+        >
+          <InstagramSquare1080Background
+            title={banner.content.headline}
+            subtitle={banner.content.description}
+            cta={banner.content.ctaText}
+          />
+        </div>
+      </div>
+    ];
+
+    return bannerOrder.map(i => bannerComponents[i]);
+  };
 
   return (
     <div className="flex h-screen bg-[#2A2B3B]">
@@ -473,139 +618,9 @@ export default function ChatInterface() {
               className="flex -ml-1 w-auto"
               columnClassName="pl-1 bg-clip-padding"
             >
-              {/* Standard Instagram */}
-              <div className="mb-4">
-                <div 
-                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-                  ref={setRef(instagramRefs, i)}
-                  onClick={() => handleBannerClick(
-                    <InstagramSquare1080
-                      title={banner.content.headline}
-                      subtitle={banner.content.description}
-                      cta={banner.content.ctaText}
-                    />,
-                    'Standard Instagram Banner'
-                  )}
-                >
-                  <InstagramSquare1080
-                    title={banner.content.headline}
-                    subtitle={banner.content.description}
-                    cta={banner.content.ctaText}
-                  />
-                </div>
-              </div>
-
-              {/* Flipped Instagram */}
-              <div className="mb-4">
-                <div 
-                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-                  ref={setRef(instagramFlippedRefs, i)}
-                  onClick={() => handleBannerClick(
-                    <InstagramSquare1080Flipped
-                      title={banner.content.headline}
-                      subtitle={banner.content.description}
-                      cta={banner.content.ctaText}
-                    />,
-                    'Flipped Instagram Banner'
-                  )}
-                >
-                  <InstagramSquare1080Flipped
-                    title={banner.content.headline}
-                    subtitle={banner.content.description}
-                    cta={banner.content.ctaText}
-                  />
-                </div>
-              </div>
-
-              {/* Float Instagram */}
-              <div className="mb-4">
-                <div 
-                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-                  ref={setRef(instagramFloatRefs, i)}
-                  onClick={() => handleBannerClick(
-                    <InstagramSquare1080Float
-                      title={banner.content.headline}
-                      subtitle={banner.content.description}
-                      cta={banner.content.ctaText}
-                    />,
-                    'Float Instagram Banner'
-                  )}
-                >
-                  <InstagramSquare1080Float
-                    title={banner.content.headline}
-                    subtitle={banner.content.description}
-                    cta={banner.content.ctaText}
-                  />
-                </div>
-              </div>
-
-              {/* Character Instagram */}
-              <div className="mb-4">
-                <div 
-                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-                  ref={setRef(instagramCharacterRefs, i)}
-                  onClick={() => handleBannerClick(
-                    <InstagramSquare1080Character
-                      title={banner.content.headline}
-                      subtitle={banner.content.description}
-                      cta={banner.content.ctaText}
-                    />,
-                    'Character Instagram Banner'
-                  )}
-                >
-                  <InstagramSquare1080Character
-                    title={banner.content.headline}
-                    subtitle={banner.content.description}
-                    cta={banner.content.ctaText}
-                  />
-                </div>
-              </div>
-
-              {/* Testimonial Instagram */}
-              <div className="mb-1">
-                <div 
-                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-                  ref={setRef(instagramTestimonialRefs, i)}
-                  onClick={() => handleBannerClick(
-                    <InstagramSquare1080Testimonial
-                      title={banner.content.headline}
-                      subtitle={banner.content.description}
-                      cta={banner.content.ctaText}
-                    />,
-                    'Testimonial Instagram Banner'
-                  )}
-                >
-                  <InstagramSquare1080Testimonial
-                    title={banner.content.headline}
-                    subtitle={banner.content.description}
-                    cta={banner.content.ctaText}
-                  />
-                </div>
-              </div>
-
-              {/* Background Instagram */}
-              <div className="mb-1">
-                <div 
-                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-                  ref={setRef(instagramBackgroundRefs, i)}
-                  onClick={() => handleBannerClick(
-                    <InstagramSquare1080Background
-                      title={banner.content.headline}
-                      subtitle={banner.content.description}
-                      cta={banner.content.ctaText}
-                    />,
-                    'Background Instagram Banner'
-                  )}
-                >
-                  <InstagramSquare1080Background
-                    title={banner.content.headline}
-                    subtitle={banner.content.description}
-                    cta={banner.content.ctaText}
-                  />
-                </div>
-              </div>
-
-              {/* Feature Matrix */}
+              {renderBanners(banner, i)}
+              
+              {/* Keep the Feature Matrix separate since it's conditional */}
               {banner.design.template === 'comparison' && banner.content.comparisonPoints && (
                 <div className="mb-1 col-span-2">
                   <div 
