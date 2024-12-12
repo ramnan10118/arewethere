@@ -12,6 +12,8 @@ import {
   FeatureMatrixBanner1080
 } from '../../components/Banner/GoogleBanners'
 import Masonry from 'react-masonry-css'
+import type { ReactNode } from 'react'
+
 
 // Define banner types based on the API response
 type ComparisonPoints = {
@@ -87,7 +89,145 @@ const masonryColumnStyles = {
   backgroundClip: 'padding-box'
 }
 
+interface DropdownOption {
+  value: string;
+  label: string;
+}
+
+function CustomDropdown({ 
+  options, 
+  value, 
+  onChange, 
+  label 
+}: { 
+  options: DropdownOption[], 
+  value: string, 
+  onChange: (value: string) => void,
+  label: string 
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <label className="block text-sm font-medium tracking-wider text-gray-400 uppercase mb-2">{label}</label>
+      <div 
+        className="relative bg-[#363748] rounded-2xl cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="p-5 flex justify-between items-center">
+          <span className="text-white text-lg">
+            {options.find(opt => opt.value === value)?.label}
+          </span>
+          <svg 
+            className={`w-5 h-5 text-white transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        
+        {isOpen && (
+          <div className="absolute w-full mt-2 py-2 bg-[#363748] rounded-2xl shadow-lg z-50 overflow-hidden">
+            {options.map((option) => (
+              <div
+                key={option.value}
+                className={`mx-2 px-4 py-3 cursor-pointer transition-colors duration-200 rounded-xl
+                          ${option.value === value 
+                            ? 'text-white' 
+                            : 'text-gray-400 hover:text-white hover:bg-[#404255]'}`}
+                onClick={() => {
+                  onChange(option.value);
+                  setIsOpen(false);
+                }}
+              >
+                {option.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+type SelectedBanner = {
+  component: ReactNode
+  title: string
+}
+
+// These can stay outside the component
+const modalAnimation = {
+  overlay: "animate-fadeIn",
+  modal: "animate-scaleIn"
+}
+
+const styles = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes scaleIn {
+    from { 
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to { 
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes scaleOut {
+    from { 
+      opacity: 1;
+      transform: scale(1);
+    }
+    to { 
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+
+  .animate-fadeOut {
+    animation: fadeOut 0.2s ease-out forwards;
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .animate-scaleOut {
+    animation: scaleOut 0.2s ease-out forwards;
+  }
+`
+
 export default function ChatInterface() {
+  // Move these inside the component
+  const [isClosing, setIsClosing] = useState(false)
+  const [selectedBanner, setSelectedBanner] = useState<SelectedBanner | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  
+  // Move handleClose inside the component
+  const handleClose = () => {
+    setIsClosing(true)
+    setTimeout(() => {
+      setIsModalOpen(false)
+      setIsClosing(false)
+    }, 200)
+  }
+
   const [input, setInput] = useState('')
   const [language, setLanguage] = useState('english')
   const [theme, setTheme] = useState('value')
@@ -175,104 +315,119 @@ export default function ChatInterface() {
     }
   }
 
+  const languageOptions = [
+    { value: 'english', label: 'English' },
+    { value: 'hindi', label: 'Hindi' },
+    { value: 'tamil', label: 'Tamil' },
+    { value: 'kannada', label: 'Kannada' },
+    { value: 'telugu', label: 'Telugu' },
+    { value: 'marathi', label: 'Marathi' }
+  ];
+
+  const themeOptions = [
+    { value: 'fomo', label: 'Fomo' },
+    { value: 'urgency', label: 'Urgency' },
+    { value: 'exclusivity', label: 'Exclusivity' },
+    { value: 'value', label: 'Value' },
+    { value: 'trust', label: 'Trust' },
+    { value: 'community', label: 'Community' }
+  ];
+
+  const handleBannerClick = (component: ReactNode, title: string) => {
+    setSelectedBanner({ component, title })
+    setIsModalOpen(true)
+  }
+
+  // Add this in your ChatInterface component before the return statement
+  useEffect(() => {
+    // Inject styles
+    const styleSheet = document.createElement("style")
+    styleSheet.innerText = styles
+    document.head.appendChild(styleSheet)
+    return () => styleSheet.remove()
+  }, [])
+
+  // Add this function inside ChatInterface component
+  const handleDownload = async () => {
+    if (selectedBanner?.component) {
+      const modalContent = document.querySelector('.modal-content') as HTMLElement
+      if (modalContent) {
+        try {
+          const dataUrl = await htmlToImage.toPng(modalContent)
+          const link = document.createElement('a')
+          link.download = `${selectedBanner.title.toLowerCase().replace(/\s+/g, '-')}.png`
+          link.href = dataUrl
+          link.click()
+        } catch (error) {
+          console.error('Error downloading banner:', error)
+        }
+      }
+    }
+  }
+
   return (
     <div className="flex h-screen bg-[#2A2B3B]">
       {/* Left Panel - Controls */}
       <div className="w-[25%] p-6 h-screen overflow-y-auto">
-        <div className="space-y-8">
-          <div className="space-y-6">
-            <div>
-              <label className="block text-xl font-medium text-white mb-3">Theme</label>
-              <select 
-                value={theme}
-                onChange={(e) => setTheme(e.target.value)}
-                className="w-full p-4 bg-[#363748] text-white rounded-2xl
-                          border-0 focus:ring-0 focus:outline-none
-                          appearance-none cursor-pointer
-                          [&>*]:py-3 [&>*]:px-4
-                          [&>option]:bg-[#424359]
-                          [&>option:checked]:bg-blue-500
-                          [&>option:hover]:bg-blue-500/50"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 1rem center',
-                  backgroundSize: '1.5em'
-                }}
-              >
-                <option value="fomo">Fomo</option>
-                <option value="urgency">Urgency</option>
-                <option value="exclusivity">Exclusivity</option>
-                <option value="value">Value</option>
-                <option value="trust">Trust</option>
-                <option value="community">Community</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xl font-medium text-white mb-3">Language</label>
-              <select 
+        <div className="h-full flex items-center">
+          <div className="w-full space-y-8">
+            <div className="grid grid-cols-2 gap-4">
+              <CustomDropdown
+                label="Language"
+                options={languageOptions}
                 value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="w-full p-4 bg-[#363748] text-white rounded-2xl
-                          border-0 focus:ring-0 focus:outline-none
-                          appearance-none cursor-pointer
-                          [&>*]:py-3 [&>*]:px-4
-                          [&>option]:bg-[#424359]
-                          [&>option:checked]:bg-blue-500
-                          [&>option:hover]:bg-blue-500/50"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 1rem center',
-                  backgroundSize: '1.5em'
-                }}
-              >
-                <option value="english">English</option>
-                <option value="hindi">Hindi</option>
-                <option value="tamil">Tamil</option>
-                <option value="kannada">Kannada</option>
-                <option value="telugu">Telugu</option>
-                <option value="marathi">Marathi</option>
-              </select>
+                onChange={setLanguage}
+              />
+
+              <CustomDropdown
+                label="Theme"
+                options={themeOptions}
+                value={theme}
+                onChange={setTheme}
+              />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <input
+            <form onSubmit={handleSubmit}>
+              <div className="relative bg-[#363748] rounded-2xl p-6">
+                <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type something..."
-                  className="w-full p-4 bg-[#363748] text-white rounded-2xl
+                  rows={3}
+                  className="w-full bg-transparent text-white
                             border-0 focus:ring-0 focus:outline-none
-                            placeholder-gray-400"
+                            placeholder-gray-400 text-lg resize-none
+                            align-top leading-relaxed"
                   disabled={isLoading}
+                  style={{ 
+                    minHeight: '120px',
+                    verticalAlign: 'top'
+                  }}
                 />
-              </div>
-              
-              <div className="flex justify-center">
-                <button 
-                  type="submit"
-                  className="w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 
-                            text-white text-lg font-medium rounded-2xl
-                            hover:from-purple-600 hover:to-pink-600
-                            focus:outline-none
-                            disabled:opacity-50 disabled:cursor-not-allowed 
-                            transition-all duration-200"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      <span>Generating...</span>
-                    </div>
-                  ) : (
-                    'Generate'
-                  )}
-                </button>
+                <div className="flex justify-center">
+                  <button 
+                    type="submit"
+                    className="w-full mt-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 
+                              text-white text-lg font-medium rounded-xl
+                              hover:from-purple-600 hover:to-pink-600
+                              focus:outline-none
+                              disabled:opacity-50 disabled:cursor-not-allowed 
+                              transition-all duration-200"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        <span>Generating...</span>
+                      </div>
+                    ) : (
+                      'Generate'
+                    )}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -280,7 +435,7 @@ export default function ChatInterface() {
       </div>
 
       {/* Right Panel - Banner Display */}
-      <div className="flex-1 p-6 overflow-y-auto bg-[#2A2B3B]">
+      <div className="flex-1 p-6 overflow-y-auto bg-[#1F2037]">
         {!response && (
           <div className="h-full flex items-center justify-center">
             <div className="text-center">
@@ -320,7 +475,18 @@ export default function ChatInterface() {
             >
               {/* Standard Instagram */}
               <div className="mb-4">
-                <div className="transform scale-70 origin-top" ref={setRef(instagramRefs, i)}>
+                <div 
+                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+                  ref={setRef(instagramRefs, i)}
+                  onClick={() => handleBannerClick(
+                    <InstagramSquare1080
+                      title={banner.content.headline}
+                      subtitle={banner.content.description}
+                      cta={banner.content.ctaText}
+                    />,
+                    'Standard Instagram Banner'
+                  )}
+                >
                   <InstagramSquare1080
                     title={banner.content.headline}
                     subtitle={banner.content.description}
@@ -331,7 +497,18 @@ export default function ChatInterface() {
 
               {/* Flipped Instagram */}
               <div className="mb-4">
-                <div className="transform scale-70 origin-top" ref={setRef(instagramFlippedRefs, i)}>
+                <div 
+                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+                  ref={setRef(instagramFlippedRefs, i)}
+                  onClick={() => handleBannerClick(
+                    <InstagramSquare1080Flipped
+                      title={banner.content.headline}
+                      subtitle={banner.content.description}
+                      cta={banner.content.ctaText}
+                    />,
+                    'Flipped Instagram Banner'
+                  )}
+                >
                   <InstagramSquare1080Flipped
                     title={banner.content.headline}
                     subtitle={banner.content.description}
@@ -342,7 +519,18 @@ export default function ChatInterface() {
 
               {/* Float Instagram */}
               <div className="mb-4">
-                <div className="transform scale-70 origin-top" ref={setRef(instagramFloatRefs, i)}>
+                <div 
+                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+                  ref={setRef(instagramFloatRefs, i)}
+                  onClick={() => handleBannerClick(
+                    <InstagramSquare1080Float
+                      title={banner.content.headline}
+                      subtitle={banner.content.description}
+                      cta={banner.content.ctaText}
+                    />,
+                    'Float Instagram Banner'
+                  )}
+                >
                   <InstagramSquare1080Float
                     title={banner.content.headline}
                     subtitle={banner.content.description}
@@ -353,7 +541,18 @@ export default function ChatInterface() {
 
               {/* Character Instagram */}
               <div className="mb-4">
-                <div className="transform scale-70 origin-top" ref={setRef(instagramCharacterRefs, i)}>
+                <div 
+                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+                  ref={setRef(instagramCharacterRefs, i)}
+                  onClick={() => handleBannerClick(
+                    <InstagramSquare1080Character
+                      title={banner.content.headline}
+                      subtitle={banner.content.description}
+                      cta={banner.content.ctaText}
+                    />,
+                    'Character Instagram Banner'
+                  )}
+                >
                   <InstagramSquare1080Character
                     title={banner.content.headline}
                     subtitle={banner.content.description}
@@ -364,7 +563,18 @@ export default function ChatInterface() {
 
               {/* Testimonial Instagram */}
               <div className="mb-1">
-                <div className="transform scale-70 origin-top" ref={setRef(instagramTestimonialRefs, i)}>
+                <div 
+                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+                  ref={setRef(instagramTestimonialRefs, i)}
+                  onClick={() => handleBannerClick(
+                    <InstagramSquare1080Testimonial
+                      title={banner.content.headline}
+                      subtitle={banner.content.description}
+                      cta={banner.content.ctaText}
+                    />,
+                    'Testimonial Instagram Banner'
+                  )}
+                >
                   <InstagramSquare1080Testimonial
                     title={banner.content.headline}
                     subtitle={banner.content.description}
@@ -375,7 +585,18 @@ export default function ChatInterface() {
 
               {/* Background Instagram */}
               <div className="mb-1">
-                <div className="transform scale-70 origin-top" ref={setRef(instagramBackgroundRefs, i)}>
+                <div 
+                  className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+                  ref={setRef(instagramBackgroundRefs, i)}
+                  onClick={() => handleBannerClick(
+                    <InstagramSquare1080Background
+                      title={banner.content.headline}
+                      subtitle={banner.content.description}
+                      cta={banner.content.ctaText}
+                    />,
+                    'Background Instagram Banner'
+                  )}
+                >
                   <InstagramSquare1080Background
                     title={banner.content.headline}
                     subtitle={banner.content.description}
@@ -384,10 +605,31 @@ export default function ChatInterface() {
                 </div>
               </div>
 
-              {/* Feature Matrix (only for comparison template) */}
+              {/* Feature Matrix */}
               {banner.design.template === 'comparison' && banner.content.comparisonPoints && (
                 <div className="mb-1 col-span-2">
-                  <div className="transform scale-70 origin-top" ref={setRef(featureMatrixRefs, i)}>
+                  <div 
+                    className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
+                    ref={setRef(featureMatrixRefs, i)}
+                    onClick={() => handleBannerClick(
+                      <FeatureMatrixBanner1080
+                        title={banner.content.headline}
+                        subtitle={banner.content.description}
+                        cta={banner.content.ctaText}
+                        basic={{
+                          title: "Basic Plan",
+                          price: "$29/mo",
+                          features: banner.content.comparisonPoints.them.map(f => ({ name: f, included: true }))
+                        }}
+                        pro={{
+                          title: "Pro Plan",
+                          price: "$99/mo",
+                          features: banner.content.comparisonPoints.us.map(f => ({ name: f, included: true }))
+                        }}
+                      />,
+                      'Feature Matrix Banner'
+                    )}
+                  >
                     <FeatureMatrixBanner1080
                       title={banner.content.headline}
                       subtitle={banner.content.description}
@@ -410,6 +652,74 @@ export default function ChatInterface() {
           </div>
         ))}
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div 
+            className={`fixed inset-0 bg-black/60 backdrop-blur-xl ${isClosing ? 'animate-fadeOut' : 'animate-fadeIn'}`}
+            onClick={handleClose}
+          />
+          
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <div 
+              className={`
+                w-full max-w-3xl
+                bg-[#2A2B3B]/90 backdrop-blur-sm
+                rounded-2xl p-8
+                shadow-[0_0_50px_0_rgba(0,0,0,0.3)]
+                border border-white/10
+                ${isClosing ? 'animate-scaleOut' : 'animate-scaleIn'}
+              `}
+            >
+              {/* Header with enhanced styling */}
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-medium text-white/90">
+                  {selectedBanner?.title}
+                </h3>
+                <button
+                  onClick={handleClose}
+                  className="text-white/70 hover:text-white/90 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Content with subtle shadow */}
+              <div className="mt-4 shadow-lg rounded-xl overflow-hidden modal-content">
+                {selectedBanner?.component}
+              </div>
+              
+              {/* Footer with enhanced buttons */}
+              <div className="mt-8 flex justify-end gap-4">
+                <button
+                  className="px-6 py-2.5 text-sm font-medium text-white 
+                             bg-gradient-to-r from-purple-500 to-purple-600
+                             rounded-lg hover:from-purple-600 hover:to-purple-700 
+                             transition-all duration-200 ease-out
+                             shadow-lg shadow-purple-500/30
+                             focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                  onClick={() => {/* Add remix functionality */}}
+                >
+                  Remix
+                </button>
+                <button
+                  className="px-6 py-2.5 text-sm font-medium text-white
+                             bg-gradient-to-r from-blue-500 to-blue-600
+                             rounded-lg hover:from-blue-600 hover:to-blue-700
+                             transition-all duration-200 ease-out
+                             shadow-lg shadow-blue-500/30
+                             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  onClick={handleDownload}
+                >
+                  Download
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

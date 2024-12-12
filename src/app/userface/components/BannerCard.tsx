@@ -7,12 +7,14 @@ type BannerCardProps = {
   title: string
   format: string
   children: React.ReactNode
+  onClick?: () => void
 }
 
-export default function BannerCard({ title, format, children }: BannerCardProps) {
+export default function BannerCard({ title, format, children, onClick }: BannerCardProps) {
   const bannerRef = useRef<HTMLDivElement>(null)
 
-  const handleDownload = async () => {
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!bannerRef.current) return
     try {
       const dataUrl = await htmlToImage.toPng(bannerRef.current, {
@@ -30,7 +32,10 @@ export default function BannerCard({ title, format, children }: BannerCardProps)
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-200 hover:shadow-xl">
+    <div 
+      className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-200 hover:shadow-xl cursor-pointer"
+      onClick={onClick}
+    >
       <div className="p-4 border-b">
         <h3 className="text-lg font-medium text-gray-900">{title}</h3>
       </div>
@@ -50,7 +55,10 @@ export default function BannerCard({ title, format, children }: BannerCardProps)
             </svg>
           </button>
           <button
-            onClick={() => navigator.clipboard.writeText(bannerRef.current?.outerHTML || '')}
+            onClick={(e) => {
+              e.stopPropagation()
+              navigator.clipboard.writeText(bannerRef.current?.outerHTML || '')
+            }}
             className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
           >
             <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
