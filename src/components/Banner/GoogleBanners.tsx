@@ -1486,3 +1486,109 @@ export function FeatureMatrixBanner1080({
     </div>
   );
 } 
+
+// Add this near the top with other interfaces
+interface BannerCopy {
+  title: string;
+  subtitle: string;
+  cta: string;
+}
+
+// Add this utility function
+async function generateBannerCopy(prompt: string): Promise<BannerCopy> {
+  try {
+    const response = await fetch('/api/generate-copy', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to generate copy');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating copy:', error);
+    return {
+      title: 'Experience the Future Today',
+      subtitle: 'Transform your workflow with AI-powered automation',
+      cta: 'Get Started'
+    };
+  }
+} 
+
+// Add this new component
+export function BannerGenerator() {
+  const [prompt, setPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [bannerCopy, setBannerCopy] = useState<BannerCopy>({
+    title: '',
+    subtitle: '',
+    cta: ''
+  });
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) return;
+    
+    setIsGenerating(true);
+    try {
+      const copy = await generateBannerCopy(prompt);
+      setBannerCopy(copy);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Prompt Input Section */}
+      <div className="space-y-4">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Enter your prompt to generate banner copy..."
+          className="w-full p-4 rounded-lg border border-gray-300 min-h-[100px]"
+        />
+        <button
+          onClick={handleGenerate}
+          disabled={isGenerating}
+          className={`px-6 py-2 rounded-full bg-blue-500 text-white ${
+            isGenerating ? 'opacity-50' : 'hover:bg-blue-600'
+          }`}
+        >
+          {isGenerating ? 'Generating...' : 'Generate Banners'}
+        </button>
+      </div>
+
+      {/* Generated Banners Section */}
+      {bannerCopy.title && (
+        <div className="space-y-8">
+          <Leaderboard728x90
+            title={bannerCopy.title}
+            subtitle={bannerCopy.subtitle}
+            cta={bannerCopy.cta}
+          />
+          
+          <Rectangle300x250
+            title={bannerCopy.title}
+            subtitle={bannerCopy.subtitle}
+            cta={bannerCopy.cta}
+          />
+          
+          <Skyscraper160x600
+            title={bannerCopy.title}
+            subtitle={bannerCopy.subtitle}
+            cta={bannerCopy.cta}
+          />
+          
+          {/* Add other banner formats as needed */}
+        </div>
+      )}
+    </div>
+  );
+} 
