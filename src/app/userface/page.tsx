@@ -22,14 +22,14 @@ type ComparisonPoints = {
 }
 
 type BannerContent = {
-  headline: string
-  description: string
-  ctaText: string
+  headline: string | React.ReactNode
+  description: string | React.ReactNode
+  ctaText: string | React.ReactNode
   comparisonPoints?: ComparisonPoints
 }
 
 type BannerDesign = {
-  template: 'comparison' | 'standard'
+  template: 'comparison' | 'standard' | 'testimonial'
   layout: string
   colors: Record<string, string>
 }
@@ -43,6 +43,33 @@ type BannerResponse = {
   banners: Banner[]
 }
 
+// Add JumbledText component for banner content
+function JumbledBannerText({ text }: { text: string }) {
+  const [jumbledText, setJumbledText] = useState(text);
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const jumbled = text
+        .split('')
+        .map((char) => {
+          if (char === ' ') return ' ';
+          if (Math.random() > 0.7) {
+            return characters.charAt(Math.floor(Math.random() * characters.length));
+          }
+          return char;
+        })
+        .join('');
+
+      setJumbledText(jumbled);
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return jumbledText;
+}
+
 const DEFAULT_BANNER: Banner = {
   design: {
     template: 'standard',
@@ -54,9 +81,9 @@ const DEFAULT_BANNER: Banner = {
     }
   },
   content: {
-    headline: 'Generating your headline...',
-    description: 'Creating the perfect description for your needs...',
-    ctaText: 'Loading...'
+    headline: <JumbledBannerText text="Generating your headline..." />,
+    description: <JumbledBannerText text="Creating the perfect description for your needs..." />,
+    ctaText: <JumbledBannerText text="Loading..." />
   }
 }
 
@@ -163,6 +190,7 @@ const modalAnimation = {
   modal: "animate-scaleIn"
 }
 
+// Add confetti styles
 const styles = `
   @keyframes fadeIn {
     from { opacity: 0; }
@@ -196,6 +224,36 @@ const styles = `
     }
   }
 
+  @keyframes gradientFlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes heartBeat {
+    0% {
+      transform: scale(1);
+    }
+    25% {
+      transform: scale(1.1);
+    }
+    40% {
+      transform: scale(1);
+    }
+    60% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
   .animate-fadeIn {
     animation: fadeIn 0.2s ease-out forwards;
   }
@@ -211,7 +269,73 @@ const styles = `
   .animate-scaleOut {
     animation: scaleOut 0.2s ease-out forwards;
   }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientFlow 3s linear infinite;
+  }
+
+  .animate-heart {
+    display: inline-block;
+    animation: heartBeat 1s ease-in-out infinite;
+    transform-origin: center;
+  }
 `
+
+// Add SkeletonCard component
+function SkeletonCard() {
+  return (
+    <div className="mb-4">
+      <div className="transform scale-70 origin-top cursor-pointer">
+        <div className="w-[500px] h-[500px] bg-[#2A2B3B] rounded-xl overflow-hidden">
+          
+          
+          {/* Banner Content */}
+          <div className="p-4">
+            <div className="aspect-square bg-gray-700/50 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Add JumbledText component
+function JumbledText() {
+  const [text, setText] = useState('Generating');
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    let dots = '';
+    
+    interval = setInterval(() => {
+      // Add dots animation
+      dots = dots.length < 3 ? dots + '.' : '';
+      
+      // Create jumbled text
+      const jumbled = 'Generating'
+        .split('')
+        .map((char, index) => {
+          if (Math.random() > 0.8) {
+            return characters.charAt(Math.floor(Math.random() * characters.length));
+          }
+          return char;
+        })
+        .join('') + dots;
+
+      setText(jumbled);
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span className="ml-2 text-sm font-normal text-blue-400">
+      {text}
+    </span>
+  );
+}
 
 export default function ChatInterface() {
   // Move these inside the component
@@ -398,6 +522,7 @@ export default function ChatInterface() {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
+              lob={selectedLOB}
             />,
             'Standard Instagram Banner'
           )}
@@ -406,6 +531,7 @@ export default function ChatInterface() {
             title={banner.content.headline}
             subtitle={banner.content.description}
             cta={banner.content.ctaText}
+            lob={selectedLOB}
           />
         </div>
       </div>,
@@ -420,6 +546,7 @@ export default function ChatInterface() {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
+              lob={selectedLOB}
             />,
             'Flipped Instagram Banner'
           )}
@@ -428,6 +555,7 @@ export default function ChatInterface() {
             title={banner.content.headline}
             subtitle={banner.content.description}
             cta={banner.content.ctaText}
+            lob={selectedLOB}
           />
         </div>
       </div>,
@@ -480,28 +608,6 @@ export default function ChatInterface() {
         </div>
       </div>,
 
-      // Testimonial Instagram
-      <div className="mb-4" key="testimonial">
-        <div 
-          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-          ref={setRef(instagramTestimonialRefs, index)}
-          onClick={() => handleBannerClick(
-            <InstagramSquare1080Testimonial
-              title={banner.content.headline}
-              subtitle={banner.content.description}
-              cta={banner.content.ctaText}
-            />,
-            'Testimonial Instagram Banner'
-          )}
-        >
-          <InstagramSquare1080Testimonial
-            title={banner.content.headline}
-            subtitle={banner.content.description}
-            cta={banner.content.ctaText}
-          />
-        </div>
-      </div>,
-
       // Background Instagram
       <div className="mb-4" key="background">
         <div 
@@ -512,7 +618,7 @@ export default function ChatInterface() {
               title={banner.content.headline}
               subtitle={banner.content.description}
               cta={banner.content.ctaText}
-              
+              lob={selectedLOB}
             />,
             'Background Instagram Banner'
           )}
@@ -530,17 +636,15 @@ export default function ChatInterface() {
     return bannerOrder.map(i => bannerComponents[i]);
   };
 
-  // Add this function to handle remix
+  // Revert handleRemix to original
   const handleRemix = () => {
     const modalContent = document.querySelector('.modal-content') as HTMLElement;
     if (modalContent) {
-      // Force a re-render of just the preview content
       const clone = selectedBanner?.component;
       setSelectedBanner(prev => prev ? {
         ...prev,
-        component: null // Clear it first
+        component: null
       } : null);
-      // Set it back immediately to trigger re-render with new random styles
       setTimeout(() => {
         setSelectedBanner(prev => prev ? {
           ...prev,
@@ -550,66 +654,81 @@ export default function ChatInterface() {
     }
   };
 
+  // Add new state for skeleton loading
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  // Add useEffect to handle skeleton timing
+  useEffect(() => {
+    if (isStreaming) {
+      setShowSkeleton(true);
+      // Remove skeleton after 1 second to show streaming content
+      const timer = setTimeout(() => {
+        setShowSkeleton(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isStreaming]);
+
   return (
     <div className="flex h-screen bg-[#2A2B3B]">
       {/* Left Panel - Controls */}
       <div className="w-[25%] p-6 h-screen overflow-y-auto">
-        <div className="h-full flex items-center">
-          <div className="w-full space-y-8">
-            {/* First row of dropdowns */}
-            <div className="grid grid-cols-2 gap-4">
-              <CustomDropdown
-                label="Language"
-                options={languageOptions}
-                value={language}
-                onChange={setLanguage}
-              />
-
-              <CustomDropdown
-                label="Theme"
-                options={themeOptions}
-                value={theme}
-                onChange={setTheme}
-              />
-            </div>
-
-            {/* LOB dropdown in its own row */}
-            <div className="w-full">
-              <CustomDropdown
-                label="LOB"
-                options={lobOptions}
-                value={lob}
-                onChange={setLob}
-              />
-            </div>
-
-            {/* Input form */}
-            <form onSubmit={handleSubmit}>
-              <div className="relative bg-[#363748] rounded-2xl p-6">
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Type something..."
-                  rows={3}
-                  className="w-full bg-transparent text-white
-                            border-0 focus:ring-0 focus:outline-none
-                            placeholder-gray-400 text-lg resize-none
-                            align-top leading-relaxed"
-                  disabled={isLoading}
-                  style={{ 
-                    minHeight: '120px',
-                    verticalAlign: 'top'
-                  }}
+        <div className="h-full flex flex-col justify-between">
+          <div className="flex-1 flex items-center">
+            <div className="w-full space-y-8">
+              {/* First row of dropdowns */}
+              <div className="grid grid-cols-2 gap-4">
+                <CustomDropdown
+                  label="Language"
+                  options={languageOptions}
+                  value={language}
+                  onChange={setLanguage}
                 />
-                <div className="flex justify-center">
+
+                <CustomDropdown
+                  label="Theme"
+                  options={themeOptions}
+                  value={theme}
+                  onChange={setTheme}
+                />
+              </div>
+
+              <div className="w-full">
+                <CustomDropdown
+                  label="LOB"
+                  options={lobOptions}
+                  value={lob}
+                  onChange={setLob}
+                />
+              </div>
+
+              {/* Input form */}
+              <form onSubmit={handleSubmit}>
+                <div className="relative bg-[#363748] rounded-2xl p-6">
+                  <textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Type something..."
+                    rows={3}
+                    className="w-full bg-transparent text-white
+                              border-0 focus:ring-0 focus:outline-none
+                              placeholder-gray-400 text-lg resize-none
+                              align-top leading-relaxed"
+                    disabled={isLoading}
+                    style={{ 
+                      minHeight: '120px',
+                      verticalAlign: 'top'
+                    }}
+                  />
                   <button 
                     type="submit"
-                    className="w-full mt-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 
+                    className="w-full mt-4 py-2.5 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 
                               text-white text-lg font-medium rounded-xl
-                              hover:from-purple-600 hover:to-pink-600
+                              hover:from-purple-600 hover:via-pink-600 hover:to-purple-600
                               focus:outline-none
                               disabled:opacity-50 disabled:cursor-not-allowed 
-                              transition-all duration-200"
+                              transition-all duration-200
+                              animate-gradient"
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -625,8 +744,12 @@ export default function ChatInterface() {
                     )}
                   </button>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
+          </div>
+          {/* Footer */}
+          <div className="text-center text-xs text-gray-500 mt-8">
+            Made with <span className="text-red-500 inline-block animate-heart">❤️</span> by ACKOdesign
           </div>
         </div>
       </div>
@@ -647,75 +770,55 @@ export default function ChatInterface() {
         )}
 
         {response?.banners.map((banner, i) => (
-          <div key={i} className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-200">
-                Banner Variation {i + 1}
-                {isStreaming && (
-                  <span className="ml-2 text-sm font-normal text-blue-400 animate-pulse">
-                    Generating...
-                  </span>
-                )}
-              </h2>
-            </div>
-
-            <Masonry
-              breakpointCols={{
-                default: 2,
-                1536: 2,
-                1280: 2,
-                1024: 1,
-                768: 1,
-              }}
-              className="flex -ml-1 w-auto"
-              columnClassName="pl-1 bg-clip-padding"
-            >
-              {renderBanners(banner, i)}
-              
-              {/* Keep the Feature Matrix separate since it's conditional */}
-              {banner.design.template === 'comparison' && banner.content.comparisonPoints && (
-                <div className="mb-1 col-span-2">
-                  <div 
-                    className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-                    ref={setRef(featureMatrixRefs, i)}
-                    onClick={() => handleBannerClick(
-                      <FeatureMatrixBanner1080
-                        title={banner.content.headline}
-                        subtitle={banner.content.description}
-                        cta={banner.content.ctaText}
-                        basic={{
-                          title: "Basic Plan",
-                          price: "$29/mo",
-                          features: banner.content.comparisonPoints.them.map(f => ({ name: f, included: true }))
-                        }}
-                        pro={{
-                          title: "Pro Plan",
-                          price: "$99/mo",
-                          features: banner.content.comparisonPoints.us.map(f => ({ name: f, included: true }))
-                        }}
-                      />,
-                      'Feature Matrix Banner'
-                    )}
-                  >
-                    <FeatureMatrixBanner1080
-                      title={banner.content.headline}
-                      subtitle={banner.content.description}
-                      cta={banner.content.ctaText}
-                      basic={{
-                        title: "Basic Plan",
-                        price: "$29/mo",
-                        features: banner.content.comparisonPoints.them.map(f => ({ name: f, included: true }))
-                      }}
-                      pro={{
-                        title: "Pro Plan",
-                        price: "$99/mo",
-                        features: banner.content.comparisonPoints.us.map(f => ({ name: f, included: true }))
-                      }}
-                    />
+          <div key={i}>
+            <div className="mb-12">
+              {showSkeleton ? (
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="h-8 w-48 bg-gray-700/50 rounded animate-pulse"></div>
                   </div>
+                  <Masonry
+                    breakpointCols={{
+                      default: 2,
+                      1536: 2,
+                      1280: 2,
+                      1024: 1,
+                      768: 1,
+                    }}
+                    className="flex -ml-1 w-auto"
+                    columnClassName="pl-1 bg-clip-padding"
+                  >
+                    {[...Array(6)].map((_, index) => (
+                      <SkeletonCard key={index} />
+                    ))}
+                  </Masonry>
                 </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold text-gray-200">
+                      
+                    </h2>
+                  </div>
+                  <Masonry
+                    breakpointCols={{
+                      default: 2,
+                      1536: 2,
+                      1280: 2,
+                      1024: 1,
+                      768: 1,
+                    }}
+                    className="flex -ml-1 w-auto"
+                    columnClassName="pl-1 bg-clip-padding"
+                  >
+                    {renderBanners(banner, i)}
+                  </Masonry>
+                </>
               )}
-            </Masonry>
+            </div>
+            {i < response.banners.length - 1 && (
+              <div className="border-t border-gray-700/50 my-8"></div>
+            )}
           </div>
         ))}
       </div>
@@ -759,7 +862,7 @@ export default function ChatInterface() {
               </div>
               
               {/* Footer with enhanced buttons */}
-              <div className="mt-8 flex justify-end gap-4">
+              <div className="mt-8 flex justify-between gap-4">
                 <button
                   className="px-6 py-2.5 text-sm font-medium text-white 
                              bg-gradient-to-r from-purple-500 to-purple-600
@@ -769,7 +872,7 @@ export default function ChatInterface() {
                              focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                   onClick={handleRemix}
                 >
-                  Remix
+                  🔥 Remix
                 </button>
                 <button
                   className="px-6 py-2.5 text-sm font-medium text-white

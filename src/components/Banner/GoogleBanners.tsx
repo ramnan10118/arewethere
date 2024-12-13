@@ -699,9 +699,41 @@ export function BackgroundLeaderboard728x90({
 // Instagram Square (1080x1080)
 export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  const [randomImage, setRandomImage] = useState('');
+
+  const getFloatImages = () => {
+    const autoImages = [
+      '/images/auto/full/full_1.png',
+      '/images/auto/full/full_2.png'
+      
+    ];
+
+    const healthImages = [
+      '/images/health/full/full_1.png',
+      '/images/health/full/full_2.png',
+      '/images/health/full/full_3.png',
+      '/images/health/full/full_4.png'
+    ];
+    console.log('Square selecting images for LOB:', lob.toLowerCase());
+      
+    switch(lob.toLowerCase()) {
+      case 'auto':
+        console.log('Selected auto images');
+        return autoImages;
+      case 'health':
+        console.log('Selected health images');
+        return healthImages;
+      default:
+        console.log('Selected default (auto) images');
+        return autoImages;
+    }
+  }
 
   useEffect(() => {
-    console.log('Square Current LOB:', lob); // Debug log
+    const images = getFloatImages();
+    const selectedImage = images[Math.floor(Math.random() * images.length)];
+    console.log('Selected random image:', selectedImage);
+    setRandomImage(selectedImage);
   }, [lob]);
 
   if (isLoading) {
@@ -724,8 +756,8 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
         <div className="w-[250px] h-full relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10" />
           <Image
-            src="/images/garage/AckoGarage.png"
-            alt="Acko Garage"
+            src={randomImage || '/images/garage/AckoGarage.png'}
+            alt="Banner Image"
             fill
             className="object-cover object-left-top scale-125"
             style={{ objectPosition: '60% top' }}
@@ -766,7 +798,7 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
             <div className="mt-auto">
               <CTAButton 
                 text={cta}
-                className="w-full h-[40px] !text-[16px]"
+                className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
               />
             </div>
           </div>
@@ -777,8 +809,44 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
 } 
 
 // Instagram Square Flipped (1080x1080)
-export function InstagramSquare1080Flipped({ logo, title, subtitle, cta }: BannerProps) {
+export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  const [randomImage, setRandomImage] = useState('');
+
+  const getFloatImages = () => {
+    const autoImages = [
+      '/images/auto/full/full_1.png',
+      '/images/auto/full/full_2.png'
+      
+    ];
+
+    const healthImages = [
+      '/images/health/full/full_1.png',
+      '/images/health/full/full_2.png',
+      '/images/health/full/full_3.png',
+      '/images/health/full/full_4.png'
+    ];
+    console.log('Square Flipped selecting images for LOB:', lob.toLowerCase());
+      
+    switch(lob.toLowerCase()) {
+      case 'auto':
+        console.log('Selected auto images');
+        return autoImages;
+      case 'health':
+        console.log('Selected health images');
+        return healthImages;
+      default:
+        console.log('Selected default (auto) images');
+        return autoImages;
+    }
+  }
+
+  useEffect(() => {
+    const images = getFloatImages();
+    const selectedImage = images[Math.floor(Math.random() * images.length)];
+    console.log('Selected random image:', selectedImage);
+    setRandomImage(selectedImage);
+  }, [lob]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
@@ -796,27 +864,42 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta }: Banne
       </div>
 
       <div className="flex h-full">
-        {/* Left Side - Content */}
-        <div className="w-[250px] flex flex-col pt-24 p-8 relative">
+        {/* Left Side - Image */}
+        <div className="w-[250px] h-full relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10" />
+          <Image
+            src={randomImage || '/images/garage/AckoGarage.png'}
+            alt="Banner Image"
+            fill
+            className="object-cover object-left-top scale-125"
+            style={{ objectPosition: '60% top' }}
+            priority
+          />
+        </div>
+        
+        {/* Right Side - Content */}
+        <div className="flex-1 flex flex-col pt-24 p-8 relative">
           {/* Optional gradient overlay for better text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/10" />
           
           {/* Content Section */}
           <div className="flex flex-col h-full relative z-10">
             {/* Text Content */}
             <div className="flex-1 flex flex-col pt-8">
-              <BannerText 
-                as="h2"
-                weight="semibold"
-                className={`text-[28px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
-              >
-                {title}
-              </BannerText>
+              <div className="w-[200px]">
+                <BannerText 
+                  as="h2"
+                  weight="semibold"
+                  className={`text-[30px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {title}
+                </BannerText>
+              </div>
               {subtitle && (
                 <BannerText 
                   as="p"
                   weight="regular"
-                  className={`text-[16px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+                  className={`text-[18px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
                 >
                   {subtitle}
                 </BannerText>
@@ -827,23 +910,10 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta }: Banne
             <div className="mt-auto">
               <CTAButton 
                 text={cta}
-                className="w-full h-[40px] !text-[16px]"
+                className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
               />
             </div>
           </div>
-        </div>
-
-        {/* Right Side - Image */}
-        <div className="flex-1 relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/10" />
-          <Image
-            src="/images/garage/AckoGarage.png"
-            alt="Acko Garage"
-            fill
-            className="object-cover object-center scale-125"
-            style={{ objectPosition: '40% top' }}
-            priority
-          />
         </div>
       </div>
     </div>
@@ -947,10 +1017,10 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'au
         {/* Bottom Grid Container */}
         <div className="grid grid-cols-2">
           {/* Bottom Left - CTA */}
-          <div className="flex items-center justify-start p-8">
+          <div className="flex items-center justify-center p-8">
             <CTAButton 
               text={cta}
-              className="w-full !px-4 h-[40px] !text-[16px]"
+              className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
             />
           </div>
 
@@ -1072,10 +1142,10 @@ export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob =
         {/* Bottom Grid Container */}
         <div className="grid grid-cols-2">
           {/* Bottom Left - CTA */}
-          <div className="flex items-center justify-start p-8">
+          <div className="flex items-center justify-center p-8">
             <CTAButton 
               text={cta}
-              className="w-full !px-4 h-[40px] !text-[16px]"
+              className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
             />
           </div>
 
@@ -1119,15 +1189,12 @@ export function InstagramSquare1080Testimonial({
   subtitle, 
   cta,
   customer
-}: BannerProps & { customer?: { name: string; role: string; image: string; testimonial?: string } }) {
+}: BannerProps & { customer?: { name: string; role: string; image: string } }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
   
   // Select random profile if customer is not provided
   const randomProfile = PROFILE_IMAGES[Math.floor(Math.random() * PROFILE_IMAGES.length)];
   const profileData = customer || randomProfile;
-
-  // Use testimonial from profile data if subtitle is not provided
-  const testimonialText = subtitle || profileData.testimonial;
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
@@ -1157,7 +1224,7 @@ export function InstagramSquare1080Testimonial({
               weight="medium"
               className={`text-[28px] leading-[1.4] line-clamp-4 ${isDark ? 'text-white/90' : 'text-gray-600'}`}
             >
-              "{testimonialText}"
+              "{subtitle}"
             </BannerText>
           </div>
         </div>
@@ -1198,7 +1265,7 @@ export function InstagramSquare1080Testimonial({
         <div className="mt-auto">
           <CTAButton 
             text={cta}
-            className="w-[220px] h-[45px] !text-[16px]"
+            className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
           />
         </div>
       </div>
@@ -1304,7 +1371,7 @@ export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob 
         <div className="w-[200px]">
           <CTAButton 
             text={cta}
-            className="w-full h-[50px] !text-[18px] !bg-white !text-gray-900"
+            className="w-[220px] h-[45px] !text-[16px] !bg-white !text-gray-900 whitespace-nowrap"
           />
         </div>
       </div>
@@ -1456,7 +1523,7 @@ export function ComparisonBanner1080({
         <div className="mt-auto">
           <CTAButton 
             text={cta}
-            className="w-full h-[45px] !text-[16px]"
+            className="w-full h-[45px] !text-[16px] !px-8"
           />
         </div>
       </div>
@@ -1625,7 +1692,7 @@ export function FeatureMatrixBanner1080({
         <div className="mt-auto">
           <CTAButton 
             text={cta}
-            className="w-full h-[45px] !text-[16px]"
+            className="w-full h-[45px] !text-[16px] !px-8"
           />
         </div>
       </div>
