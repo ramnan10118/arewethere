@@ -31,7 +31,35 @@ export default function Page() {
     title: "Transform Your Business with AI",
     subtitle: "Boost productivity and efficiency with our AI solutions",
     cta: "Get Started",
-    gradientStyle
+    gradientStyle,
+    before: {
+      title: "Before",
+      features: ["Feature 1", "Feature 2", "Feature 3"],
+      image: "/placeholder-before.png"
+    },
+    after: {
+      title: "After",
+      features: ["Improved 1", "Improved 2", "Improved 3"],
+      image: "/placeholder-after.png"
+    },
+    basic: {
+      title: "Basic Plan",
+      price: "$9.99/mo",
+      features: [
+        { name: "Basic 1", included: true },
+        { name: "Basic 2", included: true },
+        { name: "Basic 3", included: false }
+      ]
+    },
+    pro: {
+      title: "Pro Plan",
+      price: "$19.99/mo",
+      features: [
+        { name: "Pro 1", included: true },
+        { name: "Pro 2", included: true },
+        { name: "Pro 3", included: true }
+      ]
+    }
   });
   const [selectedLOB, setSelectedLOB] = useState('auto');
 
