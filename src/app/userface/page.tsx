@@ -13,6 +13,7 @@ import {
 } from '../../components/Banner/GoogleBanners'
 import Masonry from 'react-masonry-css'
 import type { ReactNode } from 'react'
+import Image from 'next/image'
 
 
 // Define banner types based on the API response
@@ -342,7 +343,7 @@ export default function ChatInterface() {
   const [isClosing, setIsClosing] = useState(false)
   const [selectedBanner, setSelectedBanner] = useState<SelectedBanner | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [bannerOrder, setBannerOrder] = useState<number[]>([0, 1, 2, 3, 4, 5]);
+  const [bannerOrder, setBannerOrder] = useState<number[]>([0, 1, 2, 3, 4]);
   const [lob, setLob] = useState('auto');
   const [selectedLOB, setSelectedLOB] = useState('auto');
 
@@ -674,7 +675,18 @@ export default function ChatInterface() {
       {/* Left Panel - Controls */}
       <div className="w-[25%] p-6 h-screen overflow-y-auto">
         <div className="h-full flex flex-col justify-between">
-          <div className="flex-1 flex items-center">
+          <div className="flex-1 flex flex-col">
+            {/* Add GIF image */}
+            <div className="mb-8 flex justify-center">
+              <Image 
+                src="/images/loaders/p0.gif"
+                alt="Loading Animation"
+                width={150}
+                height={150}
+                priority
+              />
+            </div>
+
             <div className="w-full space-y-8">
               {/* First row of dropdowns */}
               <div className="grid grid-cols-2 gap-4">

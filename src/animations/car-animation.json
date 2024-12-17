@@ -1,0 +1,15 @@
+{
+  "frames": [
+    {
+      "transform": "translateX(0%)"
+    },
+    {
+      "transform": "translateX(100%)"
+    }
+  ],
+  "timing": {
+    "duration": 2000,
+    "iterations": Infinity,
+    "easing": "ease-in-out"
+  }
+} 

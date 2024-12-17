@@ -817,7 +817,6 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
     const autoImages = [
       '/images/auto/full/full_1.png',
       '/images/auto/full/full_2.png'
-      
     ];
 
     const healthImages = [
@@ -864,23 +863,10 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
       </div>
 
       <div className="flex h-full">
-        {/* Left Side - Image */}
-        <div className="w-[250px] h-full relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/10" />
-          <Image
-            src={randomImage || '/images/garage/AckoGarage.png'}
-            alt="Banner Image"
-            fill
-            className="object-cover object-left-top scale-125"
-            style={{ objectPosition: '60% top' }}
-            priority
-          />
-        </div>
-        
-        {/* Right Side - Content */}
+        {/* Left Side - Content */}
         <div className="flex-1 flex flex-col pt-24 p-8 relative">
           {/* Optional gradient overlay for better text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10" />
           
           {/* Content Section */}
           <div className="flex flex-col h-full relative z-10">
@@ -915,6 +901,19 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
             </div>
           </div>
         </div>
+        
+        {/* Right Side - Image */}
+        <div className="w-[250px] h-full relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10" />
+          <Image
+            src={randomImage || '/images/garage/AckoGarage.png'}
+            alt="Banner Image"
+            fill
+            className="object-cover object-right-top scale-125"
+            style={{ objectPosition: '40% top' }}
+            priority
+          />
+        </div>
       </div>
     </div>
   );
@@ -946,7 +945,10 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'au
       const healthImages = [
         '/images/health/medicine/Medicine_01.png',
         '/images/health/medicine/Medicine_02.png',
-        '/images/health/medicine/Medicine_03.png'
+        '/images/health/medicine/Medicine_03.png',
+        '/images/health/medicine/Medicine_04.png',
+        '/images/health/medicine/Medicine_05.png',
+        '/images/health/medicine/Medicine_06.png'
       ];
 
       // Return images based on LOB
@@ -1057,7 +1059,9 @@ export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob =
         '/images/auto/character/character2.png',
         '/images/auto/character/character3.png',
         '/images/auto/character/character4.png',
-        '/images/auto/character/character5.png'
+        '/images/auto/character/character5.png',
+        '/images/auto/character/character6.png',
+        '/images/auto/character/character7.png'
       ];
 
       const healthCharacters = [
