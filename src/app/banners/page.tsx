@@ -33,31 +33,31 @@ export default function Page() {
     cta: "Get Started",
     gradientStyle,
     before: {
-      title: "Before",
-      features: ["Feature 1", "Feature 2", "Feature 3"],
-      image: "/placeholder-before.png"
+      title: "Before AI",
+      features: ["Manual Process", "Time Consuming", "Error Prone"],
+      image: "/images/auto/background/background_1.png"
     },
     after: {
-      title: "After",
-      features: ["Improved 1", "Improved 2", "Improved 3"],
-      image: "/placeholder-after.png"
+      title: "After AI",
+      features: ["Automated", "Fast", "Accurate"],
+      image: "/images/auto/background/background_2.png"
     },
     basic: {
       title: "Basic Plan",
       price: "$9.99/mo",
       features: [
-        { name: "Basic 1", included: true },
-        { name: "Basic 2", included: true },
-        { name: "Basic 3", included: false }
+        { name: "Basic Feature 1", included: true },
+        { name: "Basic Feature 2", included: true },
+        { name: "Basic Feature 3", included: false }
       ]
     },
     pro: {
       title: "Pro Plan",
       price: "$19.99/mo",
       features: [
-        { name: "Pro 1", included: true },
-        { name: "Pro 2", included: true },
-        { name: "Pro 3", included: true }
+        { name: "Pro Feature 1", included: true },
+        { name: "Pro Feature 2", included: true },
+        { name: "Pro Feature 3", included: true }
       ]
     }
   });
@@ -142,11 +142,25 @@ export default function Page() {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
           <div className="flex flex-col items-center">
             <h2 className="text-base font-semibold mb-4">Instagram Square - Comparison</h2>
-            <ComparisonBanner1080 {...bannerProps} />
+            <ComparisonBanner1080 
+              logo={bannerProps.logo}
+              title={bannerProps.title}
+              subtitle={bannerProps.subtitle}
+              cta={bannerProps.cta}
+              before={bannerProps.before}
+              after={bannerProps.after}
+            />
           </div>
           <div className="flex flex-col items-center">
             <h2 className="text-base font-semibold mb-4">Instagram Square - Feature Matrix</h2>
-            <FeatureMatrixBanner1080 {...bannerProps} />
+            <FeatureMatrixBanner1080 
+              logo={bannerProps.logo}
+              title={bannerProps.title}
+              subtitle={bannerProps.subtitle}
+              cta={bannerProps.cta}
+              basic={bannerProps.basic}
+              pro={bannerProps.pro}
+            />
           </div>
         </div>
       </div>

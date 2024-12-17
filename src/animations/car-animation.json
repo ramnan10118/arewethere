@@ -9,7 +9,7 @@
   ],
   "timing": {
     "duration": 2000,
-    "iterations": Infinity,
+    "iterations": "infinite",
     "easing": "ease-in-out"
   }
 } 

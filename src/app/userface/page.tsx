@@ -338,6 +338,14 @@ function JumbledText() {
   );
 }
 
+// Add this helper function at the top
+const toString = (node: React.ReactNode): string => {
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return node.toString();
+  if (node instanceof Array) return node.map(toString).join('');
+  return '';
+};
+
 export default function ChatInterface() {
   // Move these inside the component
   const [isClosing, setIsClosing] = useState(false)
@@ -401,7 +409,40 @@ export default function ChatInterface() {
     setBannerOrder(newOrder);
     
     setResponse({ 
-      banners: [DEFAULT_BANNER, DEFAULT_BANNER] 
+      banners: [
+        {
+          design: {
+            template: 'standard',
+            layout: 'center',
+            colors: {
+              background: '#f0f8ff',
+              text: '#000000',
+              cta: '#ff4500'
+            }
+          },
+          content: {
+            headline: <JumbledBannerText text="Generating your headline..." />,
+            description: <JumbledBannerText text="Creating the perfect description for your needs..." />,
+            ctaText: <JumbledBannerText text="Loading..." />
+          }
+        },
+        {
+          design: {
+            template: 'standard',
+            layout: 'center',
+            colors: {
+              background: '#f0f8ff',
+              text: '#000000',
+              cta: '#ff4500'
+            }
+          },
+          content: {
+            headline: <JumbledBannerText text="Generating your headline..." />,
+            description: <JumbledBannerText text="Creating the perfect description for your needs..." />,
+            ctaText: <JumbledBannerText text="Loading..." />
+          }
+        }
+      ]
     })
     
     try {
@@ -510,6 +551,10 @@ export default function ChatInterface() {
     }
   }
 
+  const renderContent = (content: React.ReactNode | string) => {
+    return typeof content === 'string' ? content : content;
+  };
+
   // Update renderBanners to return an array
   const renderBanners = (banner: Banner, index: number) => {
     const bannerComponents = [
@@ -520,18 +565,18 @@ export default function ChatInterface() {
           ref={setRef(instagramRefs, index)}
           onClick={() => handleBannerClick(
             <InstagramSquare1080
-              title={banner.content.headline}
-              subtitle={banner.content.description}
-              cta={banner.content.ctaText}
+              title={renderContent(banner.content.headline)}
+              subtitle={renderContent(banner.content.description)}
+              cta={renderContent(banner.content.ctaText)}
               lob={selectedLOB}
             />,
             'Standard Instagram Banner'
           )}
         >
           <InstagramSquare1080
-            title={banner.content.headline}
-            subtitle={banner.content.description}
-            cta={banner.content.ctaText}
+            title={renderContent(banner.content.headline)}
+            subtitle={renderContent(banner.content.description)}
+            cta={renderContent(banner.content.ctaText)}
             lob={selectedLOB}
           />
         </div>
@@ -544,18 +589,18 @@ export default function ChatInterface() {
           ref={setRef(instagramFlippedRefs, index)}
           onClick={() => handleBannerClick(
             <InstagramSquare1080Flipped
-              title={banner.content.headline}
-              subtitle={banner.content.description}
-              cta={banner.content.ctaText}
+              title={renderContent(banner.content.headline)}
+              subtitle={renderContent(banner.content.description)}
+              cta={renderContent(banner.content.ctaText)}
               lob={selectedLOB}
             />,
             'Flipped Instagram Banner'
           )}
         >
           <InstagramSquare1080Flipped
-            title={banner.content.headline}
-            subtitle={banner.content.description}
-            cta={banner.content.ctaText}
+            title={renderContent(banner.content.headline)}
+            subtitle={renderContent(banner.content.description)}
+            cta={renderContent(banner.content.ctaText)}
             lob={selectedLOB}
           />
         </div>
@@ -568,18 +613,18 @@ export default function ChatInterface() {
           ref={setRef(instagramFloatRefs, index)}
           onClick={() => handleBannerClick(
             <InstagramSquare1080Float
-              title={banner.content.headline}
-              subtitle={banner.content.description}
-              cta={banner.content.ctaText}
+              title={renderContent(banner.content.headline)}
+              subtitle={renderContent(banner.content.description)}
+              cta={renderContent(banner.content.ctaText)}
               lob={selectedLOB}
             />,
             'Float Instagram Banner'
           )}
         >
           <InstagramSquare1080Float
-            title={banner.content.headline}
-            subtitle={banner.content.description}
-            cta={banner.content.ctaText}
+            title={renderContent(banner.content.headline)}
+            subtitle={renderContent(banner.content.description)}
+            cta={renderContent(banner.content.ctaText)}
             lob={selectedLOB}
           />
         </div>
@@ -592,18 +637,18 @@ export default function ChatInterface() {
           ref={setRef(instagramCharacterRefs, index)}
           onClick={() => handleBannerClick(
             <InstagramSquare1080Character
-              title={banner.content.headline}
-              subtitle={banner.content.description}
-              cta={banner.content.ctaText}
+              title={renderContent(banner.content.headline)}
+              subtitle={renderContent(banner.content.description)}
+              cta={renderContent(banner.content.ctaText)}
               lob={selectedLOB}
             />,
             'Character Instagram Banner'
           )}
         >
           <InstagramSquare1080Character
-            title={banner.content.headline}
-            subtitle={banner.content.description}
-            cta={banner.content.ctaText}
+            title={renderContent(banner.content.headline)}
+            subtitle={renderContent(banner.content.description)}
+            cta={renderContent(banner.content.ctaText)}
             lob={selectedLOB}
           />
         </div>
@@ -616,18 +661,18 @@ export default function ChatInterface() {
           ref={setRef(instagramBackgroundRefs, index)}
           onClick={() => handleBannerClick(
             <InstagramSquare1080Background
-              title={banner.content.headline}
-              subtitle={banner.content.description}
-              cta={banner.content.ctaText}
+              title={renderContent(banner.content.headline)}
+              subtitle={renderContent(banner.content.description)}
+              cta={renderContent(banner.content.ctaText)}
               lob={selectedLOB}
             />,
             'Background Instagram Banner'
           )}
         >
           <InstagramSquare1080Background
-            title={banner.content.headline}
-            subtitle={banner.content.description}
-            cta={banner.content.ctaText}
+            title={renderContent(banner.content.headline)}
+            subtitle={renderContent(banner.content.description)}
+            cta={renderContent(banner.content.ctaText)}
             lob={selectedLOB}
           />
         </div>

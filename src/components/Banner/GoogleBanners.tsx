@@ -164,7 +164,7 @@ const BANNER_LIMITS = {
 } as const;
 
 interface CTAButtonProps {
-  text: string;
+  text: string | React.ReactNode;
   className?: string;
   onClick?: () => void;
 }
@@ -215,14 +215,18 @@ interface BannerProps {
     src: string;
     alt: string;
   };
-  title: string;
-  subtitle?: string;
-  cta: string;
+  title: string | React.ReactNode;
+  subtitle?: string | React.ReactNode;
+  cta: string | React.ReactNode;
 }
 
 // Utility function to validate text length
-function validateTextLength(text: string, range: { min: number; max: number }): boolean {
-  return text.length >= range.min && text.length <= range.max;
+function validateTextLength(text: React.ReactNode, range: { min: number; max: number }): boolean {
+  if (typeof text === 'string') {
+    return text.length >= range.min && text.length <= range.max;
+  }
+  // For non-string ReactNode, skip validation
+  return true;
 }
 
 interface DisclaimerProps {
@@ -253,10 +257,10 @@ export function Leaderboard728x90({ logo, title, subtitle, cta }: BannerProps) {
 
   // Development-time validation
   if (process.env.NODE_ENV === 'development') {
-    if (!validateTextLength(title, BANNER_LIMITS.leaderboard.title)) {
+    if (typeof title === 'string' && !validateTextLength(title, BANNER_LIMITS.leaderboard.title)) {
       console.warn(`Leaderboard title should be between ${BANNER_LIMITS.leaderboard.title.min}-${BANNER_LIMITS.leaderboard.title.max} characters. Current: ${title.length}`);
     }
-    if (subtitle && !validateTextLength(subtitle, BANNER_LIMITS.leaderboard.subtitle)) {
+    if (subtitle && typeof subtitle === 'string' && !validateTextLength(subtitle, BANNER_LIMITS.leaderboard.subtitle)) {
       console.warn(`Leaderboard subtitle should be between ${BANNER_LIMITS.leaderboard.subtitle.min}-${BANNER_LIMITS.leaderboard.subtitle.max} characters. Current: ${subtitle.length}`);
     }
   }
@@ -318,10 +322,10 @@ export function Rectangle300x250({ logo, title, subtitle, cta }: BannerProps) {
 
   // Development-time validation
   if (process.env.NODE_ENV === 'development') {
-    if (!validateTextLength(title, BANNER_LIMITS.rectangle.title)) {
+    if (typeof title === 'string' && !validateTextLength(title, BANNER_LIMITS.rectangle.title)) {
       console.warn(`Rectangle title should be between ${BANNER_LIMITS.rectangle.title.min}-${BANNER_LIMITS.rectangle.title.max} characters. Current: ${title.length}`);
     }
-    if (subtitle && !validateTextLength(subtitle, BANNER_LIMITS.rectangle.subtitle)) {
+    if (subtitle && typeof subtitle === 'string' && !validateTextLength(subtitle, BANNER_LIMITS.rectangle.subtitle)) {
       console.warn(`Rectangle subtitle should be between ${BANNER_LIMITS.rectangle.subtitle.min}-${BANNER_LIMITS.rectangle.subtitle.max} characters. Current: ${subtitle.length}`);
     }
   }
@@ -376,10 +380,10 @@ export function Skyscraper160x600({ logo, title, subtitle, cta }: BannerProps) {
 
   // Development-time validation
   if (process.env.NODE_ENV === 'development') {
-    if (!validateTextLength(title, BANNER_LIMITS.skyscraper.title)) {
+    if (typeof title === 'string' && !validateTextLength(title, BANNER_LIMITS.skyscraper.title)) {
       console.warn(`Skyscraper title should be between ${BANNER_LIMITS.skyscraper.title.min}-${BANNER_LIMITS.skyscraper.title.max} characters. Current: ${title.length}`);
     }
-    if (subtitle && !validateTextLength(subtitle, BANNER_LIMITS.skyscraper.subtitle)) {
+    if (subtitle && typeof subtitle === 'string' && !validateTextLength(subtitle, BANNER_LIMITS.skyscraper.subtitle)) {
       console.warn(`Skyscraper subtitle should be between ${BANNER_LIMITS.skyscraper.subtitle.min}-${BANNER_LIMITS.skyscraper.subtitle.max} characters. Current: ${subtitle.length}`);
     }
   }
@@ -434,10 +438,10 @@ export function LargeRectangle336x280({ logo, title, subtitle, cta }: BannerProp
 
   // Development-time validation
   if (process.env.NODE_ENV === 'development') {
-    if (!validateTextLength(title, BANNER_LIMITS.rectangle.title)) {
+    if (typeof title === 'string' && !validateTextLength(title, BANNER_LIMITS.rectangle.title)) {
       console.warn(`Large Rectangle title should be between ${BANNER_LIMITS.rectangle.title.min}-${BANNER_LIMITS.rectangle.title.max} characters. Current: ${title.length}`);
     }
-    if (subtitle && !validateTextLength(subtitle, BANNER_LIMITS.rectangle.subtitle)) {
+    if (subtitle && typeof subtitle === 'string' && !validateTextLength(subtitle, BANNER_LIMITS.rectangle.subtitle)) {
       console.warn(`Large Rectangle subtitle should be between ${BANNER_LIMITS.rectangle.subtitle.min}-${BANNER_LIMITS.rectangle.subtitle.max} characters. Current: ${subtitle.length}`);
     }
   }
