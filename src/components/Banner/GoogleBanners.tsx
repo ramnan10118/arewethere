@@ -714,9 +714,9 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
 
     const healthImages = [
       '/images/health/full/full_1.png',
-      '/images/health/full/full_2.png',
-      '/images/health/full/full_3.png',
-      '/images/health/full/full_4.png'
+      '/images/health/full/Full_2.png',
+      '/images/health/full/Full_3.png',
+      '/images/health/full/Full_4.png'
     ];
     console.log('Square selecting images for LOB:', lob.toLowerCase());
       
@@ -825,9 +825,9 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
 
     const healthImages = [
       '/images/health/full/full_1.png',
-      '/images/health/full/full_2.png',
-      '/images/health/full/full_3.png',
-      '/images/health/full/full_4.png'
+      '/images/health/full/Full_2.png',
+      '/images/health/full/Full_3.png',
+      '/images/health/full/Full_4.png'
     ];
     console.log('Square Flipped selecting images for LOB:', lob.toLowerCase());
       
