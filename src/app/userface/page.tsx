@@ -513,10 +513,8 @@ export default function ChatInterface() {
   ];
 
   const lobOptions = [
-    { value: 'health', label: 'Health' },
-    { value: 'life', label: 'Life' },
-    { value: 'ackodrive', label: 'AckoDrive' },
-    { value: 'auto', label: 'Auto' }
+    { value: 'auto', label: 'Auto' },
+    { value: 'health', label: 'Health' }
   ];
 
   const handleBannerClick = (component: ReactNode, title: string) => {
