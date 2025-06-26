@@ -147,55 +147,47 @@ export async function POST(req: Request) {
     if (error?.message?.includes('429') || error?.message?.includes('quota')) {
       console.log('OpenAI quota exceeded, providing fallback response')
       
-      // Return a fallback response that uses the user's inputs
+      // Return 5 simple fallback banners
       return new Response(JSON.stringify({
         banners: [
           {
-            design: {
-              template: 'standard',
-              layout: 'center',
-              colors: {
-                background: theme === 'urgency' ? '#EF4444' : theme === 'trust' ? '#3B82F6' : '#10B981',
-                text: '#FFFFFF',
-                cta: '#F59E0B'
-              }
-            },
+            design: { template: 'standard', layout: 'center', colors: { background: '#10B981', text: '#FFFFFF', cta: '#F59E0B' }},
             content: {
-              headline: language === 'hindi' ? `सर्वोत्तम ${lob === 'auto' ? 'कार' : 'स्वास्थ्य'} बीमा प्राप्त करें!` :
-                       language === 'tamil' ? `சிறந்த ${lob === 'auto' ? 'கார்' : 'சுகாதார'} காப்பீட்டைப் பெறுங்கள்!` :
-                       `Get the Best ${lob === 'auto' ? 'Car' : 'Health'} Insurance Today!`,
-              description: language === 'hindi' ? `तुरंत कोट प्राप्त करें` :
-                          language === 'tamil' ? `உடனடி மேற்கோள் பெறுங்கள்` :
-                          `Get instant quotes today`,
-              ctaText: language === 'hindi' ? 'अभी कोट प्राप्त करें' :
-                      language === 'tamil' ? 'இப்போது மேற்கோள் பெறுங்கள்' :
-                      'Get Quote Now'
+              headline: 'Get Cheapest Insurance!',
+              description: 'Save money today',
+              ctaText: 'Buy Now'
             }
           },
           {
-            design: {
-              template: 'comparison',
-              layout: 'center',
-              colors: {
-                background: '#6366F1',
-                text: '#FFFFFF',
-                cta: '#F59E0B'
-              }
-            },
+            design: { template: 'standard', layout: 'center', colors: { background: '#3B82F6', text: '#FFFFFF', cta: '#10B981' }},
             content: {
-              headline: language === 'hindi' ? `हमारा ${lob === 'auto' ? 'कार' : 'स्वास्थ्य'} बीमा क्यों चुनें?` :
-                       language === 'tamil' ? `எங்கள் ${lob === 'auto' ? 'கார்' : 'சுகாதார'} காப்பீட்டை ஏன் தேர்வு செய்ய வேண்டும்?` :
-                       `Why Choose Our ${lob === 'auto' ? 'Car' : 'Health'} Insurance?`,
-              description: language === 'hindi' ? 'बेहतर कवरेज, कम कीमत।' :
-                          language === 'tamil' ? 'சிறந்த கவரேஜ், குறைந்த விலை।' :
-                          'Better coverage, lower price.',
-              ctaText: language === 'hindi' ? 'अभी तुलना करें' :
-                      language === 'tamil' ? 'இப்போது ஒப்பிடுங்கள்' :
-                      'Compare Now',
-              comparisonPoints: {
-                us: ['Instant Claims', '24/7 Support', 'No Paperwork'],
-                them: ['Slow Claims', 'Limited Hours', 'Heavy Paperwork']
-              }
+              headline: 'Insurance in 2 Minutes!',
+              description: 'Instant approval',
+              ctaText: 'Start Now'
+            }
+          },
+          {
+            design: { template: 'standard', layout: 'center', colors: { background: '#8B5CF6', text: '#FFFFFF', cta: '#F59E0B' }},
+            content: {
+              headline: 'Trusted Protection',
+              description: '1 Crore+ happy customers',
+              ctaText: 'Join Now'
+            }
+          },
+          {
+            design: { template: 'standard', layout: 'center', colors: { background: '#EF4444', text: '#FFFFFF', cta: '#FBBF24' }},
+            content: {
+              headline: 'Do It Today!',
+              description: 'Limited time offer',
+              ctaText: 'Get Now'
+            }
+          },
+          {
+            design: { template: 'standard', layout: 'center', colors: { background: '#F59E0B', text: '#FFFFFF', cta: '#10B981' }},
+            content: {
+              headline: 'Exclusive Offer!',
+              description: 'Just for you',
+              ctaText: 'Claim Now'
             }
           }
         ]

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import * as htmlToImage from 'html-to-image'
 import {
   InstagramSquare1080,
@@ -9,11 +9,9 @@ import {
   InstagramSquare1080Character,
   InstagramSquare1080Background
 } from '../../components/Banner/GoogleBanners'
-import Masonry from 'react-masonry-css'
 import type { ReactNode } from 'react'
 import Image from 'next/image'
 import { CustomDropdown } from '../../components/ui/CustomDropdown'
-import { JumbledBannerText } from '../../components/ui/JumbledText'
 import { SkeletonCard } from '../../components/ui/SkeletonCard'
 
 
@@ -46,56 +44,15 @@ type BannerResponse = {
 }
 
 
-const DEFAULT_BANNER: Banner = {
-  design: {
-    template: 'standard',
-    layout: 'center',
-    colors: {
-      background: '#f0f8ff',
-      text: '#000000',
-      cta: '#ff4500'
-    }
-  },
-  content: {
-    headline: "Generating your headline...",
-    description: "Creating the perfect description for your needs...",
-    ctaText: "Loading..."
-  }
-}
 
-function hasContent(content: BannerContent | undefined, field: keyof BannerContent): boolean {
-  return !!(content?.[field] && content[field] !== 'Generating your headline...' && 
-    content[field] !== 'Creating the perfect description for your needs...' && 
-    content[field] !== 'Loading...')
-}
 
 // Add delay between updates
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Add this callback function
-const setRef = (refs: React.MutableRefObject<(HTMLDivElement | null)[]>, index: number) => 
-  (element: HTMLDivElement | null) => {
-    refs.current[index] = element;
-  };
 
-// Add these styles in your CSS or directly in the component
-const masonryStyles = {
-  display: 'flex',
-  marginLeft: '-30px', /* gutter size offset */
-  width: 'auto'
-}
 
-const masonryColumnStyles = {
-  paddingLeft: '30px', /* gutter size */
-  backgroundClip: 'padding-box'
-}
-
-interface DropdownOption {
-  value: string;
-  label: string;
-}
 
 
 type SelectedBanner = {
@@ -103,11 +60,6 @@ type SelectedBanner = {
   title: string
 }
 
-// These can stay outside the component
-const modalAnimation = {
-  overlay: "animate-fadeIn",
-  modal: "animate-scaleIn"
-}
 
 // Add confetti styles
 const styles = `
@@ -203,13 +155,6 @@ const styles = `
 
 
 
-// Add this helper function at the top
-const toString = (node: React.ReactNode): string => {
-  if (typeof node === 'string') return node;
-  if (typeof node === 'number') return node.toString();
-  if (node instanceof Array) return node.map(toString).join('');
-  return '';
-};
 
 export default function ChatInterface() {
   // Move these inside the component
@@ -241,28 +186,6 @@ export default function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
 
-  // Update refs to only what we need
-  const instagramRefs = useRef<(HTMLDivElement | null)[]>([])
-  const instagramFlippedRefs = useRef<(HTMLDivElement | null)[]>([])
-  const instagramFloatRefs = useRef<(HTMLDivElement | null)[]>([])
-  const instagramCharacterRefs = useRef<(HTMLDivElement | null)[]>([])
-  const instagramTestimonialRefs = useRef<(HTMLDivElement | null)[]>([])
-  const instagramBackgroundRefs = useRef<(HTMLDivElement | null)[]>([])
-  const featureMatrixRefs = useRef<(HTMLDivElement | null)[]>([])
-
-  // Initialize refs
-  useEffect(() => {
-    if (response?.banners) {
-      const length = response.banners.length
-      instagramRefs.current = Array(length).fill(null)
-      instagramFlippedRefs.current = Array(length).fill(null)
-      instagramFloatRefs.current = Array(length).fill(null)
-      instagramCharacterRefs.current = Array(length).fill(null)
-      instagramTestimonialRefs.current = Array(length).fill(null)
-      instagramBackgroundRefs.current = Array(length).fill(null)
-      featureMatrixRefs.current = Array(length).fill(null)
-    }
-  }, [response?.banners?.length])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
