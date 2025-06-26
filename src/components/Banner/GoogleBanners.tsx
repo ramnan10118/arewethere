@@ -686,7 +686,7 @@ export function BackgroundLeaderboard728x90({
               weight="regular"
               className="text-[13px] leading-snug text-white/90"
             >
-              "{subtitle}"
+              &ldquo;{subtitle}&rdquo;
             </BannerText>
           </div>
 
@@ -1232,7 +1232,7 @@ export function InstagramSquare1080Testimonial({
               weight="medium"
               className={`text-[28px] leading-[1.4] line-clamp-4 ${isDark ? 'text-white/90' : 'text-gray-600'}`}
             >
-              "{subtitle}"
+              &ldquo;{subtitle}&rdquo;
             </BannerText>
           </div>
         </div>

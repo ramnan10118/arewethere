@@ -1,10 +1,23 @@
 // API Route
-import { openai } from '@ai-sdk/openai';
-import { streamObject } from 'ai';
-import { bannerSchema } from '../../userface/schema';
+import OpenAI from 'openai';
 
 export async function POST(req: Request) {
-  const { prompt, language, theme } = await req.json();
+  try {
+    // Check if OpenAI API key is configured
+    if (!process.env.OPENAI_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to your .env.local file.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const { prompt, language, theme, lob } = await req.json();
+    
+    console.log('📝 Received parameters:', { prompt, language, theme, lob });
+    
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
 
   // Create language-specific prompt instructions
   const languageInstructions = {
@@ -25,83 +38,178 @@ export async function POST(req: Request) {
     trust: `Build trust and credibility. For comparison banners, highlight security features and guarantees vs industry standards.`,
     community: `Foster community engagement. For comparison banners, contrast community features vs isolated experiences.`
   }[theme] || 'Create a general promotional banner.';
+  
+  console.log('🌍 Language instruction:', languageInstructions);
+  console.log('🎯 Theme instruction:', themeInstructions);
 
   // Add comparison-specific formatting instructions
-  const comparisonInstructions = `
-    When generating a comparison banner, structure the content as follows:
-    - Template should be 'comparison'
-    - Headline should be clear and competitive but professional
-    - Description should set up the comparison context
-    - ComparisonPoints must include exactly 3-4 points for each side:
-      * "us": [array of our strongest features/benefits]
-      * "them": [array of corresponding competitor limitations]
-    - Each point should be:
-      * Concise (max 8 words)
-      * Parallel in structure
-      * Factual and specific
-      * Professional in tone (avoid negative language)
-    Example format:
-    {
-      "design": {
-        "template": "comparison",
-        "layout": "center",
-        "colors": { ... }
-      },
-      "content": {
-        "headline": "Why Choose Our Platform?",
-        "description": "See how we stack up against traditional solutions",
-        "ctaText": "Start Your Free Trial",
-        "comparisonPoints": {
-          "us": ["24/7 Live Support", "Unlimited Storage", "Free Updates"],
-          "them": ["Email Support Only", "Limited Storage", "Paid Updates"]
+  const comparisonInstructions = `When generating comparison banners, include comparisonPoints with "us" and "them" arrays of 3-4 benefits each.`;
+
+    console.log('🚀 Starting banner generation...');
+    
+    const systemPrompt = `You are a professional banner designer. Generate exactly 5 banner variations in JSON format.
+          
+          CRITICAL: You must strictly follow the user's specific prompt and theme. Do NOT generate generic content.
+          
+          ${languageInstructions}
+          ${themeInstructions}
+          ${comparisonInstructions}
+          
+          CONTENT REQUIREMENTS:
+          - Headlines: Maximum 8 words, directly related to user's prompt
+          - Descriptions: Maximum 12 words, supporting the specific prompt and theme
+          - CTAs: Maximum 3 words, action-oriented and theme-appropriate
+          - ALL content must be specifically about the user's prompt, not generic insurance
+          - Apply the specified theme consistently throughout all text
+          
+          Return ONLY a valid JSON object with this exact structure:
+          {
+            "banners": [
+              {
+                "design": {
+                  "template": "standard",
+                  "layout": "center",
+                  "colors": {
+                    "background": "#hex_color",
+                    "text": "#hex_color", 
+                    "cta": "#hex_color"
+                  }
+                },
+                "content": {
+                  "headline": "Banner headline (max 8 words)",
+                  "description": "Banner description (max 12 words)", 
+                  "ctaText": "Call to action (max 3 words)"
+                }
+              }
+            ]
+          }`;
+          
+    const userPrompt = `Generate 5 banner variations specifically about: "${prompt}"
+          
+          CRITICAL REQUIREMENTS:
+          - Language: ${language}
+          - Theme: ${theme} (apply this theme strongly to all content)
+          - Line of business: ${lob || 'auto'} insurance
+          - Every headline and description MUST relate directly to "${prompt}"
+          
+          Theme application for ${theme}:
+          ${theme === 'urgency' ? '- Use time-sensitive language, deadlines, "limited time", "act now"' : ''}
+          ${theme === 'fomo' ? '- Emphasize what users miss out on, "don\'t miss", "others are getting"' : ''}
+          ${theme === 'value' ? '- Focus on savings, deals, "best price", "affordable", "save money"' : ''}
+          ${theme === 'trust' ? '- Highlight reliability, security, "trusted", "secure", testimonials' : ''}
+          ${theme === 'exclusivity' ? '- Use "exclusive", "VIP", "limited access", "special offer"' : ''}
+          ${theme === 'community' ? '- Emphasize "join others", "community", "together", social proof' : ''}
+          
+          Create 5 different approaches to "${prompt}" while strongly applying the ${theme} theme:
+          1. Direct benefit of "${prompt}" with ${theme} angle
+          2. Problem-solution approach for "${prompt}" using ${theme}
+          3. Comparison showing "${prompt}" advantage with ${theme}
+          4. Emotional appeal about "${prompt}" through ${theme} lens
+          5. Call-to-action focused on "${prompt}" with ${theme} urgency
+          
+          Each banner must be clearly about "${prompt}" and feel distinctly ${theme}-themed.`;
+          
+    console.log('📋 System prompt:', systemPrompt);
+    console.log('👤 User prompt:', userPrompt);
+    
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt
+        },
+        {
+          role: 'user',
+          content: userPrompt
         }
-      }
+      ],
+      temperature: 0.7
+    });
+
+    const responseText = completion.choices[0]?.message?.content;
+    if (!responseText) {
+      throw new Error('No response from OpenAI');
     }
-  `;
 
-  const { partialObjectStream } = await streamObject({
-    model: openai('gpt-4o-mini'),
-    schema: bannerSchema,
-    prompt: `
-      ${languageInstructions}
-      ${themeInstructions}
-      ${comparisonInstructions}
-      Generate 3 banner variations for: ${prompt}
-      At least one banner must be a comparison banner following the comparison format.
-    `,
-  });
-
-  // Create a transform stream that validates comparison banner structure
-  const encoder = new TextEncoder();
-  const stream = new ReadableStream({
-    async start(controller) {
-      for await (const partialObject of partialObjectStream) {
-        // Validate comparison banner structure when template is 'comparison'
-        const validBanners = partialObject.banners?.map(banner => {
-          if (!banner) return null;
-          if (banner.design?.template === 'comparison') {
-            const points = banner.content?.comparisonPoints;
-            if (!points?.us?.length ||
-                !points?.them?.length ||
-                points.us.length !== points.them.length ||
-                points.us.length < 3 ||
-                points.us.length > 4) {
-              return null;
+    // Parse the JSON response
+    const bannerData = JSON.parse(responseText);
+    
+    return new Response(JSON.stringify(bannerData), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error('API Error Details:', error)
+    
+    // Check if it's a quota exceeded error
+    if (error?.message?.includes('429') || error?.message?.includes('quota')) {
+      console.log('OpenAI quota exceeded, providing fallback response')
+      
+      // Return a fallback response that uses the user's inputs
+      return new Response(JSON.stringify({
+        banners: [
+          {
+            design: {
+              template: 'standard',
+              layout: 'center',
+              colors: {
+                background: theme === 'urgency' ? '#EF4444' : theme === 'trust' ? '#3B82F6' : '#10B981',
+                text: '#FFFFFF',
+                cta: '#F59E0B'
+              }
+            },
+            content: {
+              headline: language === 'hindi' ? `सर्वोत्तम ${lob === 'auto' ? 'कार' : 'स्वास्थ्य'} बीमा प्राप्त करें!` :
+                       language === 'tamil' ? `சிறந்த ${lob === 'auto' ? 'கார்' : 'சுகாதார'} காப்பீட்டைப் பெறுங்கள்!` :
+                       `Get the Best ${lob === 'auto' ? 'Car' : 'Health'} Insurance Today!`,
+              description: language === 'hindi' ? `तुरंत कोट प्राप्त करें` :
+                          language === 'tamil' ? `உடனடி மேற்கோள் பெறுங்கள்` :
+                          `Get instant quotes today`,
+              ctaText: language === 'hindi' ? 'अभी कोट प्राप्त करें' :
+                      language === 'tamil' ? 'இப்போது மேற்கோள் பெறுங்கள்' :
+                      'Get Quote Now'
+            }
+          },
+          {
+            design: {
+              template: 'comparison',
+              layout: 'center',
+              colors: {
+                background: '#6366F1',
+                text: '#FFFFFF',
+                cta: '#F59E0B'
+              }
+            },
+            content: {
+              headline: language === 'hindi' ? `हमारा ${lob === 'auto' ? 'कार' : 'स्वास्थ्य'} बीमा क्यों चुनें?` :
+                       language === 'tamil' ? `எங்கள் ${lob === 'auto' ? 'கார்' : 'சுகாதார'} காப்பீட்டை ஏன் தேர்வு செய்ய வேண்டும்?` :
+                       `Why Choose Our ${lob === 'auto' ? 'Car' : 'Health'} Insurance?`,
+              description: language === 'hindi' ? 'बेहतर कवरेज, कम कीमत।' :
+                          language === 'tamil' ? 'சிறந்த கவரேஜ், குறைந்த விலை।' :
+                          'Better coverage, lower price.',
+              ctaText: language === 'hindi' ? 'अभी तुलना करें' :
+                      language === 'tamil' ? 'இப்போது ஒப்பிடுங்கள்' :
+                      'Compare Now',
+              comparisonPoints: {
+                us: ['Instant Claims', '24/7 Support', 'No Paperwork'],
+                them: ['Slow Claims', 'Limited Hours', 'Heavy Paperwork']
+              }
             }
           }
-          return banner;
-        }).filter(Boolean);
-        if (validBanners?.length) {
-          controller.enqueue(encoder.encode(JSON.stringify({ banners: validBanners }) + '\n'));
-        }
-      }
-      controller.close();
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-    },
-  });
+        ]
+      }), {
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+    
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to generate banners. Please check your API configuration.',
+        details: error?.message || 'Unknown error'
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
 }

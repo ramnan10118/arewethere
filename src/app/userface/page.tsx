@@ -7,13 +7,14 @@ import {
   InstagramSquare1080Flipped,
   InstagramSquare1080Float,
   InstagramSquare1080Character,
-  InstagramSquare1080Testimonial,
-  InstagramSquare1080Background,
-  FeatureMatrixBanner1080
+  InstagramSquare1080Background
 } from '../../components/Banner/GoogleBanners'
 import Masonry from 'react-masonry-css'
 import type { ReactNode } from 'react'
 import Image from 'next/image'
+import { CustomDropdown } from '../../components/ui/CustomDropdown'
+import { JumbledBannerText } from '../../components/ui/JumbledText'
+import { SkeletonCard } from '../../components/ui/SkeletonCard'
 
 
 // Define banner types based on the API response
@@ -44,32 +45,6 @@ type BannerResponse = {
   banners: Banner[]
 }
 
-// Add JumbledText component for banner content
-function JumbledBannerText({ text }: { text: string }) {
-  const [jumbledText, setJumbledText] = useState(text);
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const jumbled = text
-        .split('')
-        .map((char) => {
-          if (char === ' ') return ' ';
-          if (Math.random() > 0.7) {
-            return characters.charAt(Math.floor(Math.random() * characters.length));
-          }
-          return char;
-        })
-        .join('');
-
-      setJumbledText(jumbled);
-    }, 150);
-
-    return () => clearInterval(interval);
-  }, [text]);
-
-  return jumbledText;
-}
 
 const DEFAULT_BANNER: Banner = {
   design: {
@@ -82,9 +57,9 @@ const DEFAULT_BANNER: Banner = {
     }
   },
   content: {
-    headline: <JumbledBannerText text="Generating your headline..." />,
-    description: <JumbledBannerText text="Creating the perfect description for your needs..." />,
-    ctaText: <JumbledBannerText text="Loading..." />
+    headline: "Generating your headline...",
+    description: "Creating the perfect description for your needs...",
+    ctaText: "Loading..."
   }
 }
 
@@ -122,63 +97,6 @@ interface DropdownOption {
   label: string;
 }
 
-function CustomDropdown({ 
-  options, 
-  value, 
-  onChange, 
-  label 
-}: { 
-  options: DropdownOption[], 
-  value: string, 
-  onChange: (value: string) => void,
-  label: string 
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="relative">
-      <label className="block text-sm font-medium tracking-wider text-gray-400 uppercase mb-2">{label}</label>
-      <div 
-        className="relative bg-[#363748] rounded-2xl cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="p-5 flex justify-between items-center">
-          <span className="text-white text-lg">
-            {options.find(opt => opt.value === value)?.label}
-          </span>
-          <svg 
-            className={`w-5 h-5 text-white transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-        
-        {isOpen && (
-          <div className="absolute w-full mt-2 py-2 bg-[#363748] rounded-2xl shadow-lg z-50 overflow-hidden">
-            {options.map((option) => (
-              <div
-                key={option.value}
-                className={`mx-2 px-4 py-3 cursor-pointer transition-colors duration-200 rounded-xl
-                          ${option.value === value 
-                            ? 'text-white' 
-                            : 'text-gray-400 hover:text-white hover:bg-[#404255]'}`}
-                onClick={() => {
-                  onChange(option.value);
-                  setIsOpen(false);
-                }}
-              >
-                {option.label}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 type SelectedBanner = {
   component: ReactNode
@@ -283,60 +201,7 @@ const styles = `
   }
 `
 
-// Add SkeletonCard component
-function SkeletonCard() {
-  return (
-    <div className="mb-4">
-      <div className="transform scale-70 origin-top cursor-pointer">
-        <div className="w-[500px] h-[500px] bg-[#2A2B3B] rounded-xl overflow-hidden">
-          
-          
-          {/* Banner Content */}
-          <div className="p-4">
-            <div className="aspect-square bg-gray-700/50 rounded-lg animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-// Add JumbledText component
-function JumbledText() {
-  const [text, setText] = useState('Generating');
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    let dots = '';
-    
-    interval = setInterval(() => {
-      // Add dots animation
-      dots = dots.length < 3 ? dots + '.' : '';
-      
-      // Create jumbled text
-      const jumbled = 'Generating'
-        .split('')
-        .map((char, index) => {
-          if (Math.random() > 0.8) {
-            return characters.charAt(Math.floor(Math.random() * characters.length));
-          }
-          return char;
-        })
-        .join('') + dots;
-
-      setText(jumbled);
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <span className="ml-2 text-sm font-normal text-blue-400">
-      {text}
-    </span>
-  );
-}
 
 // Add this helper function at the top
 const toString = (node: React.ReactNode): string => {
@@ -421,9 +286,9 @@ export default function ChatInterface() {
             }
           },
           content: {
-            headline: <JumbledBannerText text="Generating your headline..." />,
-            description: <JumbledBannerText text="Creating the perfect description for your needs..." />,
-            ctaText: <JumbledBannerText text="Loading..." />
+            headline: "Generating your headline...",
+            description: "Creating the perfect description for your needs...",
+            ctaText: "Loading..."
           }
         },
         {
@@ -437,9 +302,9 @@ export default function ChatInterface() {
             }
           },
           content: {
-            headline: <JumbledBannerText text="Generating your headline..." />,
-            description: <JumbledBannerText text="Creating the perfect description for your needs..." />,
-            ctaText: <JumbledBannerText text="Loading..." />
+            headline: "Generating your headline...",
+            description: "Creating the perfect description for your needs...",
+            ctaText: "Loading..."
           }
         }
       ]
@@ -452,42 +317,57 @@ export default function ChatInterface() {
         body: JSON.stringify({ prompt: input, language, theme, lob }),
       })
 
-      const reader = res.body?.getReader()
-      if (!reader) return
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = new TextDecoder().decode(value)
-        const lines = chunk.split('\n').filter(Boolean)
-        const lastLine = lines[lines.length - 1]
-        
-        try {
-          const parsedData = JSON.parse(lastLine) as BannerResponse
-          await delay(300)
-          setResponse(current => ({
-            banners: current.banners.map((banner, index) => ({
-              ...banner,
-              design: {
-                ...banner.design,
-                ...parsedData.banners[index]?.design
-              },
-              content: {
-                ...banner.content,
-                headline: parsedData.banners[index]?.content?.headline || banner.content.headline,
-                description: parsedData.banners[index]?.content?.description || banner.content.description,
-                ctaText: parsedData.banners[index]?.content?.ctaText || banner.content.ctaText,
-                comparisonPoints: parsedData.banners[index]?.content?.comparisonPoints
-              }
-            }))
-          }))
-        } catch (e) {
-          console.error('Error parsing JSON:', e)
-        }
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`)
       }
+
+      const data = await res.json() as BannerResponse
+      await delay(500) // Small delay for better UX
+      setResponse(data)
     } catch (error) {
       console.error('Error:', error)
+      
+      // Fallback with mock data for development
+      setResponse({
+        banners: [
+          {
+            design: {
+              template: 'standard',
+              layout: 'center',
+              colors: {
+                background: '#3B82F6',
+                text: '#FFFFFF',
+                cta: '#10B981'
+              }
+            },
+            content: {
+              headline: `Get the Best ${lob} Insurance Today!`,
+              description: `Experience premium ${lob} coverage with unmatched benefits and instant quotes.`,
+              ctaText: 'Get Quote Now'
+            }
+          },
+          {
+            design: {
+              template: 'comparison',
+              layout: 'center',
+              colors: {
+                background: '#EF4444',
+                text: '#FFFFFF',
+                cta: '#F59E0B'
+              }
+            },
+            content: {
+              headline: `Why Choose Our ${lob} Insurance?`,
+              description: 'See how we compare to traditional insurance providers.',
+              ctaText: 'Compare Now',
+              comparisonPoints: {
+                us: ['Instant Claims', '24/7 Support', 'No Paperwork'],
+                them: ['Slow Claims', 'Limited Hours', 'Heavy Paperwork']
+              }
+            }
+          }
+        ]
+      })
     } finally {
       setIsLoading(false)
       setIsStreaming(false)
@@ -553,121 +433,43 @@ export default function ChatInterface() {
     return typeof content === 'string' ? content : content;
   };
 
-  // Update renderBanners to return an array
-  const renderBanners = (banner: Banner, index: number) => {
-    const bannerComponents = [
-      // Standard Instagram
-      <div className="mb-4" key="standard">
+  // Render one banner per content variation
+  const renderSingleBanner = (banner: Banner, index: number) => {
+    // Choose different template for each banner to add variety
+    const templates = [
+      InstagramSquare1080,
+      InstagramSquare1080Flipped, 
+      InstagramSquare1080Float,
+      InstagramSquare1080Character,
+      InstagramSquare1080Background
+    ];
+    
+    const templateNames = [
+      'Standard Instagram Banner',
+      'Flipped Instagram Banner', 
+      'Float Instagram Banner',
+      'Character Instagram Banner',
+      'Background Instagram Banner'
+    ];
+    
+    const SelectedTemplate = templates[index % templates.length];
+    const templateName = templateNames[index % templateNames.length];
+    
+    return (
+      <div className="w-full flex justify-center" key={`banner-${index}`}>
         <div 
-          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-          ref={setRef(instagramRefs, index)}
+          className="transform scale-90 origin-center cursor-pointer hover:opacity-95 transition-all duration-300 hover:scale-95 hover:shadow-2xl rounded-2xl overflow-hidden" 
           onClick={() => handleBannerClick(
-            <InstagramSquare1080
+            <SelectedTemplate
               title={renderContent(banner.content.headline)}
               subtitle={renderContent(banner.content.description)}
               cta={renderContent(banner.content.ctaText)}
               lob={selectedLOB}
             />,
-            'Standard Instagram Banner'
+            templateName
           )}
         >
-          <InstagramSquare1080
-            title={renderContent(banner.content.headline)}
-            subtitle={renderContent(banner.content.description)}
-            cta={renderContent(banner.content.ctaText)}
-            lob={selectedLOB}
-          />
-        </div>
-      </div>,
-
-      // Flipped Instagram
-      <div className="mb-4" key="flipped">
-        <div 
-          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-          ref={setRef(instagramFlippedRefs, index)}
-          onClick={() => handleBannerClick(
-            <InstagramSquare1080Flipped
-              title={renderContent(banner.content.headline)}
-              subtitle={renderContent(banner.content.description)}
-              cta={renderContent(banner.content.ctaText)}
-              lob={selectedLOB}
-            />,
-            'Flipped Instagram Banner'
-          )}
-        >
-          <InstagramSquare1080Flipped
-            title={renderContent(banner.content.headline)}
-            subtitle={renderContent(banner.content.description)}
-            cta={renderContent(banner.content.ctaText)}
-            lob={selectedLOB}
-          />
-        </div>
-      </div>,
-
-      // Float Instagram
-      <div className="mb-4" key="float">
-        <div 
-          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-          ref={setRef(instagramFloatRefs, index)}
-          onClick={() => handleBannerClick(
-            <InstagramSquare1080Float
-              title={renderContent(banner.content.headline)}
-              subtitle={renderContent(banner.content.description)}
-              cta={renderContent(banner.content.ctaText)}
-              lob={selectedLOB}
-            />,
-            'Float Instagram Banner'
-          )}
-        >
-          <InstagramSquare1080Float
-            title={renderContent(banner.content.headline)}
-            subtitle={renderContent(banner.content.description)}
-            cta={renderContent(banner.content.ctaText)}
-            lob={selectedLOB}
-          />
-        </div>
-      </div>,
-
-      // Character Instagram
-      <div className="mb-4" key="character">
-        <div 
-          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-          ref={setRef(instagramCharacterRefs, index)}
-          onClick={() => handleBannerClick(
-            <InstagramSquare1080Character
-              title={renderContent(banner.content.headline)}
-              subtitle={renderContent(banner.content.description)}
-              cta={renderContent(banner.content.ctaText)}
-              lob={selectedLOB}
-            />,
-            'Character Instagram Banner'
-          )}
-        >
-          <InstagramSquare1080Character
-            title={renderContent(banner.content.headline)}
-            subtitle={renderContent(banner.content.description)}
-            cta={renderContent(banner.content.ctaText)}
-            lob={selectedLOB}
-          />
-        </div>
-      </div>,
-
-      // Background Instagram
-      <div className="mb-4" key="background">
-        <div 
-          className="transform scale-70 origin-top cursor-pointer hover:opacity-90 transition-opacity" 
-          ref={setRef(instagramBackgroundRefs, index)}
-          onClick={() => handleBannerClick(
-            <InstagramSquare1080Background
-              title={renderContent(banner.content.headline)}
-              subtitle={renderContent(banner.content.description)}
-              cta={renderContent(banner.content.ctaText)}
-              lob={selectedLOB}
-            />,
-            'Background Instagram Banner'
-          )}
-        >
-          <InstagramSquare1080Background
+          <SelectedTemplate
             title={renderContent(banner.content.headline)}
             subtitle={renderContent(banner.content.description)}
             cta={renderContent(banner.content.ctaText)}
@@ -675,9 +477,7 @@ export default function ChatInterface() {
           />
         </div>
       </div>
-    ];
-
-    return bannerOrder.map(i => bannerComponents[i]);
+    );
   };
 
   // Revert handleRemix to original
@@ -703,14 +503,19 @@ export default function ChatInterface() {
 
   // Add useEffect to handle skeleton timing
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (isStreaming) {
       setShowSkeleton(true);
       // Remove skeleton after 1 second to show streaming content
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setShowSkeleton(false);
       }, 1000);
-      return () => clearTimeout(timer);
     }
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [isStreaming]);
 
   return (
@@ -824,58 +629,38 @@ export default function ChatInterface() {
           </div>
         )}
 
-        {response?.banners.map((banner, i) => (
-          <div key={i}>
-            <div className="mb-12">
-              {showSkeleton ? (
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="h-8 w-48 bg-gray-700/50 rounded animate-pulse"></div>
-                  </div>
-                  <Masonry
-                    breakpointCols={{
-                      default: 2,
-                      1536: 2,
-                      1280: 2,
-                      1024: 1,
-                      768: 1,
-                    }}
-                    className="flex -ml-1 w-auto"
-                    columnClassName="pl-1 bg-clip-padding"
-                  >
-                    {[...Array(6)].map((_, index) => (
-                      <SkeletonCard key={index} />
-                    ))}
-                  </Masonry>
+        {response && (
+          <div className="mb-12">
+            {showSkeleton ? (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="h-8 w-48 bg-gray-700/50 rounded animate-pulse"></div>
                 </div>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-200">
-                      
+                <div className="grid grid-cols-3 gap-8 auto-rows-min">
+                  {[...Array(5)].map((_, index) => (
+                    <SkeletonCard key={index} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-10">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-200 mb-2">
+                      Generated Banners
                     </h2>
+                    <p className="text-gray-400 text-sm">
+                      {response.banners.length} banner variations • Click to preview and download
+                    </p>
                   </div>
-                  <Masonry
-                    breakpointCols={{
-                      default: 2,
-                      1536: 2,
-                      1280: 2,
-                      1024: 1,
-                      768: 1,
-                    }}
-                    className="flex -ml-1 w-auto"
-                    columnClassName="pl-1 bg-clip-padding"
-                  >
-                    {renderBanners(banner, i)}
-                  </Masonry>
-                </>
-              )}
-            </div>
-            {i < response.banners.length - 1 && (
-              <div className="border-t border-gray-700/50 my-8"></div>
+                </div>
+                <div className="grid grid-cols-3 gap-10 auto-rows-min justify-items-center">
+                  {response.banners.map((banner, i) => renderSingleBanner(banner, i))}
+                </div>
+              </>
             )}
           </div>
-        ))}
+        )}
       </div>
 
       {isModalOpen && (

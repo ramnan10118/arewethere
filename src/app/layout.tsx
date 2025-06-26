@@ -1,9 +1,10 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 export const metadata: Metadata = {
   title: 'Banner Generator',
-  description: 'Generate banners for various ad platforms',
+  description: 'AI-powered banner generation tool',
 }
 
 export default function RootLayout({
@@ -13,7 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
+      </body>
     </html>
   )
 } 
