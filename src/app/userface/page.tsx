@@ -418,7 +418,20 @@ export default function ChatInterface() {
       const modalContent = document.querySelector('.modal-content') as HTMLElement
       if (modalContent) {
         try {
-          const dataUrl = await htmlToImage.toPng(modalContent)
+          // Wait for fonts to be fully loaded
+          await document.fonts.ready
+          
+          // Longer delay to ensure layout is completely stable
+          await new Promise(resolve => setTimeout(resolve, 300))
+          
+          const dataUrl = await htmlToImage.toPng(modalContent, {
+            quality: 1.0,
+            pixelRatio: 1,
+            style: {
+              transform: 'translateY(-8px)', // Compensate for capture offset
+              transformOrigin: 'top left',
+            }
+          })
           const link = document.createElement('a')
           link.download = `${selectedBanner.title.toLowerCase().replace(/\s+/g, '-')}.png`
           link.href = dataUrl
