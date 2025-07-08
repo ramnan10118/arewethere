@@ -71,6 +71,7 @@ interface TypographyProps {
   italic?: boolean;
   as?: Element;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 function BannerText({ 
@@ -78,7 +79,8 @@ function BannerText({
   weight = 'regular', 
   italic = false,
   as = 'p',
-  className = ''
+  className = '',
+  style = {}
 }: TypographyProps) {
   // Get the appropriate font based on weight and italic
   let font;
@@ -104,6 +106,7 @@ function BannerText({
     as,
     {
       className: `${font.className} ${className}`,
+      style: style,
     },
     children
   );
@@ -167,12 +170,18 @@ interface CTAButtonProps {
   text: string | React.ReactNode;
   className?: string;
   onClick?: () => void;
+  selectedCtaColor?: string;
+  selectedCtaTextColor?: string;
 }
 
-function CTAButton({ text, className = '', onClick }: CTAButtonProps) {
+function CTAButton({ text, className = '', onClick, selectedCtaColor, selectedCtaTextColor }: CTAButtonProps) {
   const { buttonStyle, isLoading } = useButtonStyle();
 
-  if (isLoading) {
+  // Use selectedCtaColor if provided, otherwise use hook
+  const finalButtonColor = selectedCtaColor || buttonStyle?.backgroundColor;
+  const finalTextColor = selectedCtaTextColor || (selectedCtaColor ? '#FFFFFF' : buttonStyle?.textColor);
+
+  if (isLoading && !selectedCtaColor) {
     return (
       <button 
         className={`
@@ -192,9 +201,9 @@ function CTAButton({ text, className = '', onClick }: CTAButtonProps) {
     <button 
       onClick={onClick}
       style={{
-        backgroundColor: buttonStyle?.backgroundColor,
-        color: buttonStyle?.textColor,
-        boxShadow: `0 2px 8px ${buttonStyle?.backgroundColor}80`,
+        backgroundColor: finalButtonColor,
+        color: finalTextColor,
+        boxShadow: `0 2px 8px ${finalButtonColor}80`,
         transform: 'translateY(-1px)',
         padding: '0'
       }}
@@ -218,6 +227,11 @@ interface BannerProps {
   title: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
   cta: string | React.ReactNode;
+  selectedGradient?: { background: string };
+  selectedCtaColor?: string;
+  selectedTextColor?: string;
+  selectedHeadingColor?: string;
+  selectedCtaTextColor?: string;
 }
 
 // Utility function to validate text length
@@ -233,15 +247,17 @@ interface DisclaimerProps {
   text: string;
   isDark?: boolean;
   className?: string;
+  selectedTextColor?: string;
 }
 
-function Disclaimer({ text, isDark, className = '' }: DisclaimerProps) {
+function Disclaimer({ text, isDark, className = '', selectedTextColor }: DisclaimerProps) {
   return (
     <div className={`absolute bottom-2 left-0 right-0 px-2 ${className}`}>
       <BannerText
         as="p"
         weight="regular"
-        className={`text-[8px] text-center ${isDark ? 'text-white/60' : 'text-gray-500'}`}
+        className={`text-[8px] text-center`}
+        style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.6)' : '#6B7280') }}
       >
         {text}
       </BannerText>
@@ -250,8 +266,13 @@ function Disclaimer({ text, isDark, className = '' }: DisclaimerProps) {
 }
 
 // Leaderboard (728x90)
-export function Leaderboard728x90({ logo, title, subtitle, cta }: BannerProps) {
+export function Leaderboard728x90({ logo, title, subtitle, cta, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor }: BannerProps) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selected colors if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
   
   console.log('Gradient Class:', gradientStyle); // Debug log
 
@@ -270,7 +291,7 @@ export function Leaderboard728x90({ logo, title, subtitle, cta }: BannerProps) {
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[728px] h-[90px] rounded-lg overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[728px] h-[90px] rounded-lg overflow-hidden">
       <div className="flex h-full items-center">
         {/* Logo Section */}
         <div className="w-[120px] h-full flex items-center justify-center border-r border-white/20">
@@ -288,7 +309,8 @@ export function Leaderboard728x90({ logo, title, subtitle, cta }: BannerProps) {
             <BannerText 
               as="h2" 
               weight="semibold"
-              className={`text-[18px] leading-tight mb-0.5 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              className={`text-[18px] leading-tight mb-0.5`}
+              style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
             >
               {title}
             </BannerText>
@@ -296,7 +318,8 @@ export function Leaderboard728x90({ logo, title, subtitle, cta }: BannerProps) {
               <BannerText 
                 as="p"
                 weight="regular"
-                className={`text-[13px] ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+                className={`text-[13px]`}
+                style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
               >
                 {subtitle}
               </BannerText>
@@ -305,20 +328,28 @@ export function Leaderboard728x90({ logo, title, subtitle, cta }: BannerProps) {
           <CTAButton 
             text={cta}
             className="ml-4 px-6 h-[36px] whitespace-nowrap min-w-[140px]"
+            selectedCtaColor={selectedCtaColor}
+            selectedCtaTextColor={selectedCtaTextColor}
           />
         </div>
       </div>
       {/* <Disclaimer 
         text="*Terms and conditions apply"
         isDark={isDark}
+        selectedTextColor={selectedTextColor}
       /> */}
     </div>
   );
 }
 
 // Medium Rectangle (300x250)
-export function Rectangle300x250({ logo, title, subtitle, cta }: BannerProps) {
+export function Rectangle300x250({ logo, title, subtitle, cta, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor }: BannerProps) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selected colors if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
 
   // Development-time validation
   if (process.env.NODE_ENV === 'development') {
@@ -335,7 +366,7 @@ export function Rectangle300x250({ logo, title, subtitle, cta }: BannerProps) {
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[300px] h-[250px] rounded-lg overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[300px] h-[250px] rounded-lg overflow-hidden">
       <div className="p-5 flex flex-col h-full">
         <Logo 
           isDark={isDark} 
@@ -347,7 +378,8 @@ export function Rectangle300x250({ logo, title, subtitle, cta }: BannerProps) {
           <BannerText 
             as="h2"
             weight="semibold"
-            className={`text-[20px] leading-tight mb-2 line-clamp-2 ${isDark ? 'text-white' : 'text-gray-900'}`}
+            className={`text-[20px] leading-tight mb-2 line-clamp-2`}
+            style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
           >
             {title}
           </BannerText>
@@ -355,7 +387,8 @@ export function Rectangle300x250({ logo, title, subtitle, cta }: BannerProps) {
             <BannerText 
               as="p"
               weight="regular"
-              className={`text-[13px] leading-snug line-clamp-3 ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+              className={`text-[13px] leading-snug line-clamp-3`}
+              style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
             >
               {subtitle}
             </BannerText>
@@ -364,19 +397,27 @@ export function Rectangle300x250({ logo, title, subtitle, cta }: BannerProps) {
         <CTAButton 
           text={cta}
           className="w-full h-[40px]"
+          selectedCtaColor={selectedCtaColor}
+          selectedCtaTextColor={selectedCtaTextColor}
         />
       </div>
       {/* <Disclaimer 
         text="*Terms and conditions apply"
         isDark={isDark}
+        selectedTextColor={selectedTextColor}
       /> */}
     </div>
   );
 }
 
 // Skyscraper (160x600)
-export function Skyscraper160x600({ logo, title, subtitle, cta }: BannerProps) {
+export function Skyscraper160x600({ logo, title, subtitle, cta, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor }: BannerProps) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selected colors if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
 
   // Development-time validation
   if (process.env.NODE_ENV === 'development') {
@@ -393,7 +434,7 @@ export function Skyscraper160x600({ logo, title, subtitle, cta }: BannerProps) {
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[160px] h-[600px] rounded-lg overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[160px] h-[600px] rounded-lg overflow-hidden">
       <div className="p-4 flex flex-col h-full">
         <Logo 
           isDark={isDark} 
@@ -405,7 +446,8 @@ export function Skyscraper160x600({ logo, title, subtitle, cta }: BannerProps) {
           <BannerText 
             as="h2"
             weight="semibold"
-            className={`text-[18px] leading-tight mb-3 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
+            className={`text-[18px] leading-tight mb-3 text-center`}
+            style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
           >
             {title}
           </BannerText>
@@ -413,7 +455,8 @@ export function Skyscraper160x600({ logo, title, subtitle, cta }: BannerProps) {
             <BannerText 
               as="p"
               weight="regular"
-              className={`text-[13px] leading-relaxed text-center mb-6 ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+              className={`text-[13px] leading-relaxed text-center mb-6`}
+              style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
             >
               {subtitle}
             </BannerText>
@@ -422,19 +465,27 @@ export function Skyscraper160x600({ logo, title, subtitle, cta }: BannerProps) {
         <CTAButton 
           text={cta}
           className="w-full h-[40px]"
+          selectedCtaColor={selectedCtaColor}
+          selectedCtaTextColor={selectedCtaTextColor}
         />
       </div>
       {/* <Disclaimer 
         text="*Terms and conditions apply"
         isDark={isDark}
+        selectedTextColor={selectedTextColor}
       /> */}
     </div>
   );
 } 
 
 // Large Rectangle (336x280)
-export function LargeRectangle336x280({ logo, title, subtitle, cta }: BannerProps) {
+export function LargeRectangle336x280({ logo, title, subtitle, cta, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor }: BannerProps) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selected colors if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
 
   // Development-time validation
   if (process.env.NODE_ENV === 'development') {
@@ -451,7 +502,7 @@ export function LargeRectangle336x280({ logo, title, subtitle, cta }: BannerProp
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[336px] h-[280px] rounded-lg overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[336px] h-[280px] rounded-lg overflow-hidden">
       <div className="p-5 flex flex-col h-full">
         <Logo 
           isDark={isDark} 
@@ -463,7 +514,8 @@ export function LargeRectangle336x280({ logo, title, subtitle, cta }: BannerProp
           <BannerText 
             as="h2"
             weight="semibold"
-            className={`text-[22px] leading-tight mb-2 line-clamp-2 ${isDark ? 'text-white' : 'text-gray-900'}`}
+            className={`text-[22px] leading-tight mb-2 line-clamp-2`}
+            style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
           >
             {title}
           </BannerText>
@@ -471,7 +523,8 @@ export function LargeRectangle336x280({ logo, title, subtitle, cta }: BannerProp
             <BannerText 
               as="p"
               weight="regular"
-              className={`text-[14px] leading-snug line-clamp-3 ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+              className={`text-[14px] leading-snug line-clamp-3`}
+              style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
             >
               {subtitle}
             </BannerText>
@@ -480,26 +533,34 @@ export function LargeRectangle336x280({ logo, title, subtitle, cta }: BannerProp
         <CTAButton 
           text={cta}
           className="w-full h-[40px]"
+          selectedCtaColor={selectedCtaColor}
+          selectedCtaTextColor={selectedCtaTextColor}
         />
       </div>
       {/* <Disclaimer 
         text="*Terms and conditions apply"
         isDark={isDark}
+        selectedTextColor={selectedTextColor}
       /> */}
     </div>
   );
 } 
 
 // Instagram Story (1080x1920)
-export function InstagramStory1080x1920({ logo, title, subtitle, cta }: BannerProps) {
+export function InstagramStory1080x1920({ logo, title, subtitle, cta, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor }: BannerProps) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selected colors if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
 
   if (isLoading) {
     return <div className="w-[270px] h-[480px] animate-pulse bg-gray-200 rounded-lg" />;
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[270px] h-[480px] rounded-2xl overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[270px] h-[480px] rounded-2xl overflow-hidden">
       <div className="p-6 flex flex-col h-full">
         {/* Top Section with Logo */}
         <Logo 
@@ -514,7 +575,8 @@ export function InstagramStory1080x1920({ logo, title, subtitle, cta }: BannerPr
           <BannerText 
             as="h2"
             weight="semibold"
-            className={`text-[24px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
+            className={`text-[24px] leading-tight mb-4`}
+            style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
           >
             {title}
           </BannerText>
@@ -522,7 +584,8 @@ export function InstagramStory1080x1920({ logo, title, subtitle, cta }: BannerPr
             <BannerText 
               as="p"
               weight="regular"
-              className={`text-[16px] leading-relaxed mb-8 ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+              className={`text-[16px] leading-relaxed mb-8`}
+              style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
             >
               {subtitle}
             </BannerText>
@@ -530,6 +593,8 @@ export function InstagramStory1080x1920({ logo, title, subtitle, cta }: BannerPr
           <CTAButton 
             text={cta}
             className="w-full h-[44px] text-[15px]"
+            selectedCtaColor={selectedCtaColor}
+            selectedCtaTextColor={selectedCtaTextColor}
           />
         </div>
       </div>
@@ -542,8 +607,13 @@ export function InstagramStory1080x1920({ logo, title, subtitle, cta }: BannerPr
 } 
 
 // Leaderboard Variation (728x90)
-export function LeaderboardVariation728x90({ logo, title, subtitle, cta }: BannerProps) {
+export function LeaderboardVariation728x90({ logo, title, subtitle, cta, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor }: BannerProps) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selected colors if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
 
   if (isLoading) {
     return (
@@ -553,7 +623,8 @@ export function LeaderboardVariation728x90({ logo, title, subtitle, cta }: Banne
 
   return (
     <div 
-      className={`w-[728px] h-[90px] relative overflow-hidden rounded-lg ${gradientStyle}`}
+      style={finalGradientStyle}
+      className="w-[728px] h-[90px] relative overflow-hidden rounded-lg"
     >
       {/* Content Container */}
       <div className="w-full h-full flex items-center justify-between px-8 relative">
@@ -562,13 +633,15 @@ export function LeaderboardVariation728x90({ logo, title, subtitle, cta }: Banne
           <BannerText
             as="h2"
             weight="bold"
-            className={`text-xl mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}
+            className={`text-xl mb-1`}
+            style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
           >
             {title}
           </BannerText>
           <BannerText
             weight="medium"
-            className={`text-sm ${isDark ? 'text-white/80' : 'text-gray-700'} max-w-[400px]`}
+            className="text-sm max-w-[400px]"
+            style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.8)' : '#374151') }}
           >
             {subtitle}
           </BannerText>
@@ -579,6 +652,8 @@ export function LeaderboardVariation728x90({ logo, title, subtitle, cta }: Banne
           <CTAButton 
             text={cta}
             className="px-6 py-2.5 text-sm font-medium hover:scale-105 transition-transform"
+            selectedCtaColor={selectedCtaColor}
+            selectedCtaTextColor={selectedCtaTextColor}
           />
           <Logo 
             isDark={isDark}
@@ -701,9 +776,24 @@ export function BackgroundLeaderboard728x90({
 } 
 
 // Instagram Square (1080x1080)
-export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
+export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto', selectedImage, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor, isModal = false }: BannerProps & { lob?: string, selectedImage?: string, isModal?: boolean }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
-  const [randomImage, setRandomImage] = useState('');
+  
+  // Use selectedGradient if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
+  
+  // Determine text colors - use selected colors if provided, otherwise fall back to isDark logic
+  const headingTextStyle = selectedHeadingColor ? 
+    { color: selectedHeadingColor } : 
+    {};
+  const bodyTextStyle = selectedTextColor ? 
+    { color: selectedTextColor } : 
+    {};
+  const headingClassName = selectedHeadingColor ? '' : (isDark ? 'text-white' : 'text-gray-900');
+  const bodyClassName = selectedTextColor ? '' : (isDark ? 'text-white/90' : 'text-gray-600');
+  const [randomImage, setRandomImage] = useState('/images/auto/full/full_1.png');
 
   const getFloatImages = () => {
     const autoImages = [
@@ -734,18 +824,24 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
   }
 
   useEffect(() => {
+    // If selectedImage prop is provided, use it directly
+    if (selectedImage) {
+      setRandomImage(selectedImage);
+      return;
+    }
+
     const images = getFloatImages();
-    const selectedImage = images[Math.floor(Math.random() * images.length)];
-    console.log('Selected random image:', selectedImage);
-    setRandomImage(selectedImage);
-  }, [lob]);
+    const randomSelectedImage = images[Math.floor(Math.random() * images.length)];
+    setRandomImage(randomSelectedImage);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lob, selectedImage]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
       {/* Logo Section - Spans full width */}
       <div className="absolute top-0 left-0 right-0 p-8 z-10">
         <Logo 
@@ -759,14 +855,23 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
         {/* Left Side - Image */}
         <div className="w-[250px] h-full relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10" />
-          <Image
-            src={randomImage || '/images/garage/AckoGarage.png'}
-            alt="Banner Image"
-            fill
-            className="object-cover object-left-top scale-125"
-            style={{ objectPosition: '60% top' }}
-            priority
-          />
+          {isModal ? (
+            <img
+              src={randomImage}
+              alt="Banner Image"
+              className="w-full h-full object-cover object-left-top scale-125"
+              style={{ objectPosition: '60% top' }}
+            />
+          ) : (
+            <Image
+              src={randomImage}
+              alt="Banner Image"
+              fill
+              className="object-cover object-left-top scale-125"
+              style={{ objectPosition: '60% top' }}
+              priority
+            />
+          )}
         </div>
         
         {/* Right Side - Content */}
@@ -782,7 +887,8 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
                 <BannerText 
                   as="h2"
                   weight="semibold"
-                  className={`text-[30px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
+                  className="text-[30px] leading-tight mb-4"
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
                 >
                   {title}
                 </BannerText>
@@ -791,7 +897,8 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
                 <BannerText 
                   as="p"
                   weight="regular"
-                  className={`text-[18px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+                  className="text-[18px] leading-relaxed"
+                  style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
                 >
                   {subtitle}
                 </BannerText>
@@ -803,6 +910,8 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
               <CTAButton 
                 text={cta}
                 className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
+                selectedCtaColor={selectedCtaColor}
+                selectedCtaTextColor={selectedCtaTextColor}
               />
             </div>
           </div>
@@ -813,9 +922,14 @@ export function InstagramSquare1080({ logo, title, subtitle, cta, lob = 'auto' }
 } 
 
 // Instagram Square Flipped (1080x1080)
-export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
+export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = 'auto', selectedImage, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor, isModal = false }: BannerProps & { lob?: string, selectedImage?: string, isModal?: boolean }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
-  const [randomImage, setRandomImage] = useState('');
+  
+  // Use selectedGradient if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
+  const [randomImage, setRandomImage] = useState('/images/auto/full/full_1.png');
 
   const getFloatImages = () => {
     const autoImages = [
@@ -845,18 +959,24 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
   }
 
   useEffect(() => {
+    // If selectedImage prop is provided, use it directly
+    if (selectedImage) {
+      setRandomImage(selectedImage);
+      return;
+    }
+
     const images = getFloatImages();
-    const selectedImage = images[Math.floor(Math.random() * images.length)];
-    console.log('Selected random image:', selectedImage);
-    setRandomImage(selectedImage);
-  }, [lob]);
+    const randomSelectedImage = images[Math.floor(Math.random() * images.length)];
+    setRandomImage(randomSelectedImage);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lob, selectedImage]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
       {/* Logo Section - Spans full width */}
       <div className="absolute top-0 left-0 right-0 p-8 z-10">
         <Logo 
@@ -880,7 +1000,8 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
                 <BannerText 
                   as="h2"
                   weight="semibold"
-                  className={`text-[30px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
+                  className="text-[30px] leading-tight mb-4"
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
                 >
                   {title}
                 </BannerText>
@@ -889,7 +1010,8 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
                 <BannerText 
                   as="p"
                   weight="regular"
-                  className={`text-[18px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+                  className="text-[18px] leading-relaxed"
+                  style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
                 >
                   {subtitle}
                 </BannerText>
@@ -901,6 +1023,8 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
               <CTAButton 
                 text={cta}
                 className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
+                selectedCtaColor={selectedCtaColor}
+                selectedCtaTextColor={selectedCtaTextColor}
               />
             </div>
           </div>
@@ -909,14 +1033,23 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
         {/* Right Side - Image */}
         <div className="w-[250px] h-full relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10" />
-          <Image
-            src={randomImage || '/images/garage/AckoGarage.png'}
-            alt="Banner Image"
-            fill
-            className="object-cover object-right-top scale-125"
-            style={{ objectPosition: '40% top' }}
-            priority
-          />
+          {isModal ? (
+            <img
+              src={randomImage}
+              alt="Banner Image"
+              className="w-full h-full object-cover object-right-top scale-125"
+              style={{ objectPosition: '40% top' }}
+            />
+          ) : (
+            <Image
+              src={randomImage}
+              alt="Banner Image"
+              fill
+              className="object-cover object-right-top scale-125"
+              style={{ objectPosition: '40% top' }}
+              priority
+            />
+          )}
         </div>
       </div>
     </div>
@@ -924,11 +1057,22 @@ export function InstagramSquare1080Flipped({ logo, title, subtitle, cta, lob = '
 } 
 
 // Instagram Square with Floating Image (1080x1080)
-export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
+export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'auto', selectedImage, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor, isModal = false }: BannerProps & { lob?: string, selectedImage?: string, isModal?: boolean }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selectedGradient if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
   const [floatImage, setFloatImage] = useState('/images/auto/cars/Car_1.png');
 
   useEffect(() => {
+    // If selectedImage prop is provided, use it directly
+    if (selectedImage) {
+      setFloatImage(selectedImage);
+      return;
+    }
+
     console.log('Float Current LOB:', lob); // Debug log
     
     // Get all available float images for the selected LOB
@@ -976,14 +1120,15 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'au
     const randomImage = images[Math.floor(Math.random() * images.length)];
     console.log('Selected random float image:', randomImage);
     setFloatImage(randomImage);
-  }, [lob]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lob, selectedImage]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
       {/* Grid Container */}
       <div className="h-full grid grid-rows-2">
         {/* Top Grid - Logo, Title, Subtitle */}
@@ -1003,7 +1148,8 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'au
               <BannerText 
                 as="h2"
                 weight="semibold"
-                className={`text-[36px] leading-tight mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}
+                className={`text-[36px] leading-tight mb-6 `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
               >
                 {title}
               </BannerText>
@@ -1012,7 +1158,8 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'au
               <BannerText 
                 as="p"
                 weight="regular"
-                className={`text-[18px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+                className={`text-[18px] leading-relaxed `}
+                  style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
               >
                 {subtitle}
               </BannerText>
@@ -1027,19 +1174,29 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'au
             <CTAButton 
               text={cta}
               className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
+              selectedCtaColor={selectedCtaColor}
+              selectedCtaTextColor={selectedCtaTextColor}
             />
           </div>
 
           {/* Bottom Right - Image */}
           <div className="relative overflow-hidden">
             <div className="absolute right-[-45%] top-[-40%] w-[150%] h-[150%]">
-              <Image
-                src={floatImage}
-                alt={lob === 'auto' ? "Car" : "Medicine"}
-                fill
-                className="object-contain"
-                priority
-              />
+              {isModal ? (
+                <img
+                  src={floatImage}
+                  alt={lob === 'auto' ? "Car" : "Medicine"}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <Image
+                  src={floatImage}
+                  alt={lob === 'auto' ? "Car" : "Medicine"}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1049,11 +1206,22 @@ export function InstagramSquare1080Float({ logo, title, subtitle, cta, lob = 'au
 } 
 
 // Instagram Square with Character (1080x1080)
-export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
+export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob = 'auto', selectedImage, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor, isModal = false }: BannerProps & { lob?: string, selectedImage?: string, isModal?: boolean }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selectedGradient if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
   const [characterImage, setCharacterImage] = useState('/images/auto/character/character1.png');
 
   useEffect(() => {
+    // If selectedImage prop is provided, use it directly
+    if (selectedImage) {
+      setCharacterImage(selectedImage);
+      return;
+    }
+
     console.log('Current LOB:', lob); // Debug log for current LOB
     
     // Get all available character images for the selected LOB
@@ -1105,14 +1273,15 @@ export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob =
     const randomImage = images[Math.floor(Math.random() * images.length)];
     console.log('Selected random image:', randomImage); // Debug log for selected image
     setCharacterImage(randomImage);
-  }, [lob]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lob, selectedImage]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
       {/* Grid Container */}
       <div className="h-full grid grid-rows-2">
         {/* Top Grid - Logo, Title, Subtitle */}
@@ -1131,7 +1300,8 @@ export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob =
             <BannerText 
               as="h2"
               weight="semibold"
-              className={`text-[36px] leading-tight mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              className={`text-[36px] leading-tight mb-4 `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
             >
               {title}
             </BannerText>
@@ -1139,7 +1309,8 @@ export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob =
               <BannerText 
                 as="p"
                 weight="regular"
-                className={`text-[18px] leading-relaxed ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+                className={`text-[18px] leading-relaxed `}
+                  style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
               >
                 {subtitle}
               </BannerText>
@@ -1154,19 +1325,29 @@ export function InstagramSquare1080Character({ logo, title, subtitle, cta, lob =
             <CTAButton 
               text={cta}
               className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
+              selectedCtaColor={selectedCtaColor}
+              selectedCtaTextColor={selectedCtaTextColor}
             />
           </div>
 
           {/* Bottom Right - Image */}
           <div className="relative overflow-hidden">
             <div className="absolute right-[-35%] top-[-03%] w-[140%] h-[140%]">
-              <Image
-                src={characterImage}
-                alt="Character"
-                fill
-                className="object-contain"
-                priority
-              />
+              {isModal ? (
+                <img
+                  src={characterImage}
+                  alt="Character"
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <Image
+                  src={characterImage}
+                  alt="Character"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1196,9 +1377,19 @@ export function InstagramSquare1080Testimonial({
   title, 
   subtitle, 
   cta,
-  customer
+  customer,
+  selectedGradient,
+  selectedCtaColor,
+  selectedTextColor,
+  selectedHeadingColor,
+  selectedCtaTextColor
 }: BannerProps & { customer?: { name: string; role: string; image: string } }) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selectedGradient if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
   
   // Select random profile if customer is not provided
   const randomProfile = PROFILE_IMAGES[Math.floor(Math.random() * PROFILE_IMAGES.length)];
@@ -1209,7 +1400,7 @@ export function InstagramSquare1080Testimonial({
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
       <div className="h-full flex flex-col items-center p-8">
         {/* Logo */}
         <Logo 
@@ -1230,7 +1421,8 @@ export function InstagramSquare1080Testimonial({
             <BannerText 
               as="p"
               weight="medium"
-              className={`text-[28px] leading-[1.4] line-clamp-4 ${isDark ? 'text-white/90' : 'text-gray-600'}`}
+              className={`text-[28px] leading-[1.4] line-clamp-4 `}
+                  style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.9)' : '#4B5563') }}
             >
               &ldquo;{subtitle}&rdquo;
             </BannerText>
@@ -1255,14 +1447,16 @@ export function InstagramSquare1080Testimonial({
             <BannerText 
               as="h3"
               weight="semibold"
-              className={`text-[18px] mb-0.5 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              className={`text-[18px] mb-0.5 `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
             >
               {profileData.name}
             </BannerText>
             <BannerText 
               as="p"
               weight="regular"
-              className={`text-[14px] ${isDark ? 'text-white/70' : 'text-gray-600'}`}
+              className={`text-[14px] `}
+                  style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.7)' : '#4B5563') }}
             >
               {profileData.role}
             </BannerText>
@@ -1274,6 +1468,8 @@ export function InstagramSquare1080Testimonial({
           <CTAButton 
             text={cta}
             className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
+            selectedCtaColor={selectedCtaColor}
+            selectedCtaTextColor={selectedCtaTextColor}
           />
         </div>
       </div>
@@ -1282,11 +1478,22 @@ export function InstagramSquare1080Testimonial({
 } 
 
 // Instagram Square with Background (1080x1080)
-export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob = 'auto' }: BannerProps & { lob?: string }) {
-  const { isDark, isLoading } = useGradient();
+export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob = 'auto', selectedImage, selectedGradient, selectedCtaColor, selectedTextColor, selectedHeadingColor, selectedCtaTextColor, isModal = false }: BannerProps & { lob?: string, selectedImage?: string, isModal?: boolean }) {
+  const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selectedGradient if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
   const [backgroundImage, setBackgroundImage] = useState('/images/auto/background/background_1.png');
 
   useEffect(() => {
+    // If selectedImage prop is provided, use it directly
+    if (selectedImage) {
+      setBackgroundImage(selectedImage);
+      return;
+    }
+
     console.log('Background Current LOB:', lob); // Debug log
     
     // Get all available background images for the selected LOB
@@ -1324,7 +1531,8 @@ export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob 
     const randomImage = images[Math.floor(Math.random() * images.length)];
     console.log('Selected random background:', randomImage);
     setBackgroundImage(randomImage);
-  }, [lob]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lob, selectedImage]);
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
@@ -1334,14 +1542,23 @@ export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob 
     <div className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
-        <Image
-          src={backgroundImage}
-          alt={`${lob.toUpperCase()} Background`}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-black/40" /> {/* Dark overlay for better text contrast */}
+        {isModal ? (
+          <img
+            src={backgroundImage}
+            alt={`${lob.toUpperCase()} Background`}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <Image
+            src={backgroundImage}
+            alt={`${lob.toUpperCase()} Background`}
+            fill
+            className="object-cover"
+            priority
+          />
+        )}
+        <div className="absolute inset-0" style={selectedGradient?.background ? finalGradientStyle : {}} /> {/* Gradient overlay or transparent */}
+        {!selectedGradient?.background && <div className="absolute inset-0 bg-black/40" />} {/* Dark overlay for better text contrast when no gradient */}
       </div>
 
       {/* Content Container */}
@@ -1360,7 +1577,8 @@ export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob 
           <BannerText 
             as="h2"
             weight="semibold"
-            className="text-[42px] leading-tight mb-4 text-white"
+            className="text-[42px] leading-tight mb-4"
+            style={{ color: selectedHeadingColor || '#FFFFFF' }}
           >
             {title}
           </BannerText>
@@ -1368,7 +1586,8 @@ export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob 
             <BannerText 
               as="p"
               weight="regular"
-              className="text-[20px] leading-relaxed text-white/90"
+              className="text-[20px] leading-relaxed"
+              style={{ color: selectedTextColor || '#FFFFFF' }}
             >
               {subtitle}
             </BannerText>
@@ -1379,7 +1598,9 @@ export function InstagramSquare1080Background({ logo, title, subtitle, cta, lob 
         <div className="w-[200px]">
           <CTAButton 
             text={cta}
-            className="w-[220px] h-[45px] !text-[16px] !bg-white !text-gray-900 whitespace-nowrap"
+            className="w-[220px] h-[45px] !text-[16px] whitespace-nowrap"
+            selectedCtaColor={selectedCtaColor}
+            selectedCtaTextColor={selectedCtaTextColor}
           />
         </div>
       </div>
@@ -1402,6 +1623,11 @@ interface ComparisonBannerProps extends BannerProps {
 export function ComparisonBanner1080({ 
   logo, 
   cta,
+  selectedGradient,
+  selectedCtaColor,
+  selectedTextColor,
+  selectedHeadingColor,
+  selectedCtaTextColor,
   before = {
     title: "Without AI",
     features: [
@@ -1422,13 +1648,18 @@ export function ComparisonBanner1080({
   }
 }: ComparisonBannerProps) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selectedGradient if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
       <div className="h-full flex flex-col p-8">
         {/* Logo */}
         <Logo 
@@ -1451,7 +1682,8 @@ export function ComparisonBanner1080({
               <BannerText 
                 as="h3"
                 weight="semibold"
-                className={`text-[20px] mb-4 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
+                className={`text-[20px] mb-4 text-center `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
               >
                 {before.title}
               </BannerText>
@@ -1473,7 +1705,8 @@ export function ComparisonBanner1080({
                     <div className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-white/60' : 'bg-gray-600'}`} />
                     <BannerText 
                       weight="regular"
-                      className={`text-[14px] ${isDark ? 'text-white/80' : 'text-gray-600'}`}
+                      className={`text-[14px] `}
+                  style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.8)' : '#4B5563') }}
                     >
                       {feature}
                     </BannerText>
@@ -1494,7 +1727,8 @@ export function ComparisonBanner1080({
               <BannerText 
                 as="h3"
                 weight="semibold"
-                className={`text-[20px] mb-4 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
+                className={`text-[20px] mb-4 text-center `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
               >
                 {after.title}
               </BannerText>
@@ -1516,7 +1750,8 @@ export function ComparisonBanner1080({
                     <div className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-white/60' : 'bg-gray-600'}`} />
                     <BannerText 
                       weight="regular"
-                      className={`text-[14px] ${isDark ? 'text-white/80' : 'text-gray-600'}`}
+                      className={`text-[14px] `}
+                  style={{ color: selectedTextColor || (isDark ? 'rgba(255,255,255,0.8)' : '#4B5563') }}
                     >
                       {feature}
                     </BannerText>
@@ -1532,6 +1767,8 @@ export function ComparisonBanner1080({
           <CTAButton 
             text={cta}
             className="w-full h-[45px] !text-[16px] !px-8"
+            selectedCtaColor={selectedCtaColor}
+            selectedCtaTextColor={selectedCtaTextColor}
           />
         </div>
       </div>
@@ -1557,6 +1794,11 @@ interface FeatureMatrixProps extends BannerProps {
 export function FeatureMatrixBanner1080({ 
   logo, 
   cta,
+  selectedGradient,
+  selectedCtaColor,
+  selectedTextColor,
+  selectedHeadingColor,
+  selectedCtaTextColor,
   basic = {
     title: "Basic Plan",
     price: "$29/mo",
@@ -1581,13 +1823,18 @@ export function FeatureMatrixBanner1080({
   }
 }: FeatureMatrixProps) {
   const { gradientStyle, isDark, isLoading } = useGradient();
+  
+  // Use selectedGradient if provided, otherwise use hook
+  const finalGradientStyle = selectedGradient?.background ? 
+    { background: selectedGradient.background } : 
+    gradientStyle;
 
   if (isLoading) {
     return <div className="w-[500px] h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
   }
 
   return (
-    <div style={gradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
+    <div style={finalGradientStyle} className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden">
       <div className="h-full flex flex-col p-8">
         {/* Logo */}
         <Logo 
@@ -1605,7 +1852,8 @@ export function FeatureMatrixBanner1080({
             <BannerText 
               as="h3"
               weight="semibold"
-              className={`text-[24px] mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              className={`text-[24px] mb-2 `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
             >
               {basic.title}
             </BannerText>
@@ -1614,7 +1862,8 @@ export function FeatureMatrixBanner1080({
             <BannerText 
               as="p"
               weight="medium"
-              className={`text-[32px] mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              className={`text-[32px] mb-6 `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
             >
               {basic.price}
             </BannerText>
@@ -1653,7 +1902,8 @@ export function FeatureMatrixBanner1080({
             <BannerText 
               as="h3"
               weight="semibold"
-              className={`text-[24px] mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              className={`text-[24px] mb-2 `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
             >
               {pro.title}
             </BannerText>
@@ -1662,7 +1912,8 @@ export function FeatureMatrixBanner1080({
             <BannerText 
               as="p"
               weight="medium"
-              className={`text-[32px] mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}
+              className={`text-[32px] mb-6 `}
+                  style={{ color: selectedHeadingColor || (isDark ? '#FFFFFF' : '#1A1A1A') }}
             >
               {pro.price}
             </BannerText>
@@ -1701,6 +1952,8 @@ export function FeatureMatrixBanner1080({
           <CTAButton 
             text={cta}
             className="w-full h-[45px] !text-[16px] !px-8"
+            selectedCtaColor={selectedCtaColor}
+            selectedCtaTextColor={selectedCtaTextColor}
           />
         </div>
       </div>

@@ -13,6 +13,7 @@ import type { ReactNode } from 'react'
 import Image from 'next/image'
 import { CustomDropdown } from '../../components/ui/CustomDropdown'
 import { SkeletonCard } from '../../components/ui/SkeletonCard'
+import { generateOptimalColorSet, createColorVariation, generateFastRemixColorSet } from '../../utils/smartColorSelection'
 
 
 // Define banner types based on the API response
@@ -58,6 +59,8 @@ function delay(ms: number) {
 type SelectedBanner = {
   component: ReactNode
   title: string
+  bannerData?: Banner
+  templateIndex?: number
 }
 
 
@@ -176,15 +179,34 @@ export default function ChatInterface() {
     setTimeout(() => {
       setIsModalOpen(false)
       setIsClosing(false)
+      setModalPreviewStyles(null) // Reset modal preview when closing
     }, 200)
   }
 
   const [input, setInput] = useState('')
   const [language, setLanguage] = useState('english')
-  const [theme, setTheme] = useState('value')
+  const [theme, setTheme] = useState('fomo')
   const [response, setResponse] = useState<BannerResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
+  const [bannerStyles, setBannerStyles] = useState<{[key: number]: {
+    image?: string;
+    gradient?: { background: string };
+    ctaColor?: string;
+    textColor?: string;
+    headingColor?: string;
+    ctaTextColor?: string;
+  }}>({})
+
+  // Separate state for modal preview (temporary remix changes)
+  const [modalPreviewStyles, setModalPreviewStyles] = useState<{
+    image?: string;
+    gradient?: { background: string };
+    ctaColor?: string;
+    textColor?: string;
+    headingColor?: string;
+    ctaTextColor?: string;
+  } | null>(null)
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -192,12 +214,66 @@ export default function ChatInterface() {
     setIsLoading(true)
     setIsStreaming(true)
     
+    // Clear previous response to prevent memory accumulation
+    setResponse(null)
+    
+    // Clear previous banner styles
+    setBannerStyles({})
+    
     // Shuffle banner order
     const newOrder = [...bannerOrder].sort(() => Math.random() - 0.5);
     setBannerOrder(newOrder);
     
     setResponse({ 
       banners: [
+        {
+          design: {
+            template: 'standard',
+            layout: 'center',
+            colors: {
+              background: '#f0f8ff',
+              text: '#000000',
+              cta: '#ff4500'
+            }
+          },
+          content: {
+            headline: "Generating your headline...",
+            description: "Creating the perfect description for your needs...",
+            ctaText: "Loading..."
+          }
+        },
+        {
+          design: {
+            template: 'standard',
+            layout: 'center',
+            colors: {
+              background: '#f0f8ff',
+              text: '#000000',
+              cta: '#ff4500'
+            }
+          },
+          content: {
+            headline: "Generating your headline...",
+            description: "Creating the perfect description for your needs...",
+            ctaText: "Loading..."
+          }
+        },
+        {
+          design: {
+            template: 'standard',
+            layout: 'center',
+            colors: {
+              background: '#f0f8ff',
+              text: '#000000',
+              cta: '#ff4500'
+            }
+          },
+          content: {
+            headline: "Generating your headline...",
+            description: "Creating the perfect description for your needs...",
+            ctaText: "Loading..."
+          }
+        },
         {
           design: {
             template: 'standard',
@@ -247,6 +323,9 @@ export default function ChatInterface() {
       const data = await res.json() as BannerResponse
       await delay(500) // Small delay for better UX
       setResponse(data)
+      
+      // Generate and store images for each banner template that needs them
+      generateBannerImages()
     } catch (error) {
       console.error('Error:', error)
       
@@ -291,6 +370,9 @@ export default function ChatInterface() {
           }
         ]
       })
+      
+      // Generate and store images for fallback banners too
+      generateBannerImages()
     } finally {
       setIsLoading(false)
       setIsStreaming(false)
@@ -320,10 +402,6 @@ export default function ChatInterface() {
     { value: 'health', label: 'Health' }
   ];
 
-  const handleBannerClick = (component: ReactNode, title: string) => {
-    setSelectedBanner({ component, title })
-    setIsModalOpen(true)
-  }
 
   // Add this in your ChatInterface component before the return statement
   useEffect(() => {
@@ -356,6 +434,86 @@ export default function ChatInterface() {
     return typeof content === 'string' ? content : content;
   };
 
+  // Generate and store images for all banners once
+  const generateBannerImages = () => {
+    const autoImages = {
+      full: ['/images/auto/full/full_1.png', '/images/auto/full/full_2.png'],
+      float: ['/images/auto/cars/Car_1.png', '/images/auto/cars/Car_2.png', '/images/auto/cars/Car_3.png', '/images/auto/cars/Car_4.png', '/images/auto/cars/Car_5.png', '/images/auto/cars/Car_6.png', '/images/auto/cars/Car_7.png', '/images/auto/cars/Car_8.png', '/images/auto/cars/Car_9.png', '/images/auto/cars/Car_10.png'],
+      character: ['/images/auto/character/character1.png', '/images/auto/character/character2.png', '/images/auto/character/character3.png', '/images/auto/character/character4.png', '/images/auto/character/character5.png', '/images/auto/character/character6.png', '/images/auto/character/character7.png'],
+      background: ['/images/auto/background/background_1.png', '/images/auto/background/background_2.png', '/images/auto/background/background_3.png', '/images/auto/background/background_4.png']
+    };
+    
+    const healthImages = {
+      full: ['/images/health/full/full_1.png', '/images/health/full/Full_2.png', '/images/health/full/Full_3.png', '/images/health/full/Full_4.png'],
+      float: ['/images/health/medicine/Medicine_01.png', '/images/health/medicine/Medicine_02.png', '/images/health/medicine/Medicine_03.png', '/images/health/medicine/Medicine_04.png', '/images/health/medicine/Medicine_05.png', '/images/health/medicine/Medicine_06.png'],
+      character: ['/images/health/characters/character1.png', '/images/health/characters/character2.png', '/images/health/characters/character3.png', '/images/health/characters/character4.png', '/images/health/characters/character5.png', '/images/health/characters/character6.png', '/images/health/characters/character7.png'],
+      background: ['/images/health/background/Background_1.png', '/images/health/background/Background_2.png']
+    };
+
+    const imageMap = selectedLOB.toLowerCase() === 'health' ? healthImages : autoImages;
+    const newBannerStyles: {[key: number]: {
+      image?: string;
+      gradient?: { background: string };
+      ctaColor?: string;
+      textColor?: string;
+      headingColor?: string;
+      ctaTextColor?: string;
+    }} = {};
+    
+    // Generate images and intelligent color combinations for all 5 banners (0-4)
+    for (let i = 0; i < 5; i++) {
+      const templateIndex = i % 5;
+      
+      // Generate optimal color set with accessibility compliance
+      const colorSet = generateOptimalColorSet();
+      
+      // Template 0 = Standard (full), Template 1 = Flipped (full), Template 2 = Float, Template 3 = Character, Template 4 = Background
+      if (templateIndex === 0 || templateIndex === 1) {
+        const images = imageMap.full;
+        newBannerStyles[i] = { 
+          image: images[Math.floor(Math.random() * images.length)],
+          gradient: { background: colorSet.gradient },
+          ctaColor: colorSet.ctaColor,
+          textColor: colorSet.textColor,
+          headingColor: colorSet.headingColor,
+          ctaTextColor: colorSet.contrastRatios.ctaTextToCta
+        };
+      } else if (templateIndex === 2) {
+        const images = imageMap.float;
+        newBannerStyles[i] = { 
+          image: images[Math.floor(Math.random() * images.length)],
+          gradient: { background: colorSet.gradient },
+          ctaColor: colorSet.ctaColor,
+          textColor: colorSet.textColor,
+          headingColor: colorSet.headingColor,
+          ctaTextColor: colorSet.contrastRatios.ctaTextToCta
+        };
+      } else if (templateIndex === 3) {
+        const images = imageMap.character;
+        newBannerStyles[i] = { 
+          image: images[Math.floor(Math.random() * images.length)],
+          gradient: { background: colorSet.gradient },
+          ctaColor: colorSet.ctaColor,
+          textColor: colorSet.textColor,
+          headingColor: colorSet.headingColor,
+          ctaTextColor: colorSet.contrastRatios.ctaTextToCta
+        };
+      } else if (templateIndex === 4) {
+        const images = imageMap.background;
+        newBannerStyles[i] = { 
+          image: images[Math.floor(Math.random() * images.length)],
+          gradient: { background: colorSet.gradient },
+          ctaColor: colorSet.ctaColor,
+          textColor: colorSet.textColor,
+          headingColor: colorSet.headingColor,
+          ctaTextColor: colorSet.contrastRatios.ctaTextToCta
+        };
+      }
+    }
+    
+    setBannerStyles(newBannerStyles);
+  };
+
   // Render one banner per content variation
   const renderSingleBanner = (banner: Banner, index: number) => {
     // Choose different template for each banner to add variety
@@ -377,48 +535,178 @@ export default function ChatInterface() {
     
     const SelectedTemplate = templates[index % templates.length];
     const templateName = templateNames[index % templateNames.length];
+    const templateIndex = index % templates.length;
+    
+    // Use stored styles for this banner (image, gradient, CTA color, text colors)
+    const selectedImage = bannerStyles[index]?.image;
+    const selectedGradient = bannerStyles[index]?.gradient;
+    const selectedCtaColor = bannerStyles[index]?.ctaColor;
+    const selectedTextColor = bannerStyles[index]?.textColor;
+    const selectedHeadingColor = bannerStyles[index]?.headingColor;
+    const selectedCtaTextColor = bannerStyles[index]?.ctaTextColor;
     
     return (
       <div className="w-full flex justify-center" key={`banner-${index}`}>
         <div 
           className="transform scale-90 origin-center cursor-pointer hover:opacity-95 transition-all duration-300 hover:scale-95 hover:shadow-2xl rounded-2xl overflow-hidden" 
-          onClick={() => handleBannerClick(
-            <SelectedTemplate
-              title={renderContent(banner.content.headline)}
-              subtitle={renderContent(banner.content.description)}
-              cta={renderContent(banner.content.ctaText)}
-              lob={selectedLOB}
-            />,
-            templateName
-          )}
+          onClick={() => {
+            // Create an identical component for the modal with same styles
+            const modalComponent = (
+              <SelectedTemplate
+                title={renderContent(banner.content.headline)}
+                subtitle={renderContent(banner.content.description)}
+                cta={renderContent(banner.content.ctaText)}
+                lob={selectedLOB}
+                selectedImage={selectedImage}
+                selectedGradient={selectedGradient}
+                selectedCtaColor={selectedCtaColor}
+                selectedTextColor={selectedTextColor}
+                selectedHeadingColor={selectedHeadingColor}
+                selectedCtaTextColor={selectedCtaTextColor}
+              />
+            );
+            
+            setSelectedBanner({ 
+              component: modalComponent, 
+              title: templateName,
+              templateIndex: index
+            });
+            setModalPreviewStyles(null); // Reset modal preview when opening new banner
+            setIsModalOpen(true);
+          }}
         >
           <SelectedTemplate
             title={renderContent(banner.content.headline)}
             subtitle={renderContent(banner.content.description)}
             cta={renderContent(banner.content.ctaText)}
             lob={selectedLOB}
+            selectedImage={selectedImage}
+            selectedGradient={selectedGradient}
+            selectedCtaColor={selectedCtaColor}
+            selectedTextColor={selectedTextColor}
+            selectedHeadingColor={selectedHeadingColor}
+            selectedCtaTextColor={selectedCtaTextColor}
           />
         </div>
       </div>
     );
   };
 
-  // Revert handleRemix to original
+  // Remix function to randomize image, background gradient, and CTA color for selected banner
   const handleRemix = () => {
-    const modalContent = document.querySelector('.modal-content') as HTMLElement;
-    if (modalContent) {
-      const clone = selectedBanner?.component;
-      setSelectedBanner(prev => prev ? {
-        ...prev,
-        component: null
-      } : null);
-      setTimeout(() => {
-        setSelectedBanner(prev => prev ? {
-          ...prev,
-          component: clone
-        } : null);
-      }, 0);
+    if (selectedBanner && selectedBanner.templateIndex !== undefined) {
+      const index = selectedBanner.templateIndex;
+      const templateIndex = index % 5;
+      
+      // Get the template components and names
+      const templates = [
+        InstagramSquare1080,
+        InstagramSquare1080Flipped, 
+        InstagramSquare1080Float,
+        InstagramSquare1080Character,
+        InstagramSquare1080Background
+      ];
+      const templateNames = [
+        'Standard Instagram Banner',
+        'Flipped Instagram Banner', 
+        'Float Instagram Banner',
+        'Character Instagram Banner',
+        'Background Instagram Banner'
+      ];
+      
+      const SelectedTemplate = templates[templateIndex];
+      const templateName = templateNames[templateIndex];
+      
+      // Get image map for current LOB
+      const autoImages = {
+        full: ['/images/auto/full/full_1.png', '/images/auto/full/full_2.png'],
+        float: ['/images/auto/cars/Car_1.png', '/images/auto/cars/Car_2.png', '/images/auto/cars/Car_3.png', '/images/auto/cars/Car_4.png', '/images/auto/cars/Car_5.png', '/images/auto/cars/Car_6.png', '/images/auto/cars/Car_7.png', '/images/auto/cars/Car_8.png', '/images/auto/cars/Car_9.png', '/images/auto/cars/Car_10.png'],
+        character: ['/images/auto/character/character1.png', '/images/auto/character/character2.png', '/images/auto/character/character3.png', '/images/auto/character/character4.png', '/images/auto/character/character5.png', '/images/auto/character/character6.png', '/images/auto/character/character7.png'],
+        background: ['/images/auto/background/background_1.png', '/images/auto/background/background_2.png', '/images/auto/background/background_3.png', '/images/auto/background/background_4.png']
+      };
+      
+      const healthImages = {
+        full: ['/images/health/full/full_1.png', '/images/health/full/Full_2.png', '/images/health/full/Full_3.png', '/images/health/full/Full_4.png'],
+        float: ['/images/health/medicine/Medicine_01.png', '/images/health/medicine/Medicine_02.png', '/images/health/medicine/Medicine_03.png', '/images/health/medicine/Medicine_04.png', '/images/health/medicine/Medicine_05.png', '/images/health/medicine/Medicine_06.png'],
+        character: ['/images/health/characters/character1.png', '/images/health/characters/character2.png', '/images/health/characters/character3.png', '/images/health/characters/character4.png', '/images/health/characters/character5.png', '/images/health/characters/character6.png', '/images/health/characters/character7.png'],
+        background: ['/images/health/background/Background_1.png', '/images/health/background/Background_2.png']
+      };
+      
+      const imageMap = selectedLOB.toLowerCase() === 'health' ? healthImages : autoImages;
+      
+      // Generate new image selection
+      let newImage = '';
+      if (templateIndex === 0 || templateIndex === 1) {
+        const images = imageMap.full;
+        newImage = images[Math.floor(Math.random() * images.length)];
+      } else if (templateIndex === 2) {
+        const images = imageMap.float;
+        newImage = images[Math.floor(Math.random() * images.length)];
+      } else if (templateIndex === 3) {
+        const images = imageMap.character;
+        newImage = images[Math.floor(Math.random() * images.length)];
+      } else if (templateIndex === 4) {
+        const images = imageMap.background;
+        newImage = images[Math.floor(Math.random() * images.length)];
+      }
+      
+      // Generate new color set using fast remix for instant performance
+      const newColorSet = generateFastRemixColorSet();
+      
+      // Update only the modal preview styles (don't touch original bannerStyles)
+      setModalPreviewStyles({
+        image: newImage,
+        gradient: { background: newColorSet.gradient },
+        ctaColor: newColorSet.ctaColor,
+        textColor: newColorSet.textColor,
+        headingColor: newColorSet.headingColor,
+        ctaTextColor: newColorSet.contrastRatios.ctaTextToCta
+      });
+      
+      // No need to update selectedBanner.component since renderModalContent() 
+      // will automatically use modalPreviewStyles when available
     }
+  };
+
+  // Function to render modal content with current or preview styles
+  const renderModalContent = () => {
+    if (!selectedBanner || selectedBanner.templateIndex === undefined) return null;
+    
+    const index = selectedBanner.templateIndex;
+    const templateIndex = index % 5;
+    
+    // Get the template components
+    const templates = [
+      InstagramSquare1080,
+      InstagramSquare1080Flipped, 
+      InstagramSquare1080Float,
+      InstagramSquare1080Character,
+      InstagramSquare1080Background
+    ];
+    
+    const SelectedTemplate = templates[templateIndex];
+    const currentBanner = response?.banners[index];
+    if (!currentBanner) return null;
+    
+    // Use modal preview styles if available, otherwise use original banner styles
+    const originalStyles = bannerStyles[index] || {};
+    const stylesToUse = modalPreviewStyles || originalStyles;
+    
+    return (
+      <SelectedTemplate
+        title={renderContent(currentBanner.content.headline)}
+        subtitle={renderContent(currentBanner.content.description)}
+        cta={renderContent(currentBanner.content.ctaText)}
+        lob={selectedLOB}
+        selectedImage={stylesToUse.image || originalStyles.image}
+        selectedGradient={stylesToUse.gradient || originalStyles.gradient}
+        selectedCtaColor={stylesToUse.ctaColor || originalStyles.ctaColor}
+        selectedTextColor={stylesToUse.textColor || originalStyles.textColor}
+        selectedHeadingColor={stylesToUse.headingColor || originalStyles.headingColor}
+        selectedCtaTextColor={stylesToUse.ctaTextColor || originalStyles.ctaTextColor}
+        isModal={true}
+      />
+    );
   };
 
   // Add new state for skeleton loading
@@ -621,7 +909,7 @@ export default function ChatInterface() {
               
               {/* Content with subtle shadow */}
               <div className="mt-4 shadow-lg rounded-xl overflow-hidden modal-content">
-                {selectedBanner?.component}
+                {selectedBanner && renderModalContent()}
               </div>
               
               {/* Footer with enhanced buttons */}

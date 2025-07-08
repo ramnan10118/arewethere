@@ -2,6 +2,8 @@
 import OpenAI from 'openai';
 
 export async function POST(req: Request) {
+  let prompt: string, language: string, theme: string, lob: string;
+  
   try {
     // Check if OpenAI API key is configured
     if (!process.env.OPENAI_API_KEY) {
@@ -11,7 +13,11 @@ export async function POST(req: Request) {
       )
     }
 
-    const { prompt, language, theme, lob } = await req.json();
+    const requestData = await req.json();
+    prompt = requestData.prompt;
+    language = requestData.language;
+    theme = requestData.theme;
+    lob = requestData.lob;
     
     console.log('📝 Received parameters:', { prompt, language, theme, lob });
     
@@ -47,20 +53,28 @@ export async function POST(req: Request) {
 
     console.log('🚀 Starting banner generation...');
     
-    const systemPrompt = `You are a professional banner designer. Generate exactly 5 banner variations in JSON format.
+    // Retry logic for network issues
+    const maxRetries = 2;
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔄 Attempt ${attempt}/${maxRetries} to generate banners...`);
+        
+        const systemPrompt = `You are a professional banner designer. Generate 3-5 banner variations in JSON format.
           
-          CRITICAL: You must strictly follow the user's specific prompt and theme. Do NOT generate generic content.
+          IMPORTANT: Create engaging banners based on the user's prompt and theme. Be creative and relevant.
           
           ${languageInstructions}
           ${themeInstructions}
           ${comparisonInstructions}
           
           CONTENT REQUIREMENTS:
-          - Headlines: Maximum 8 words, directly related to user's prompt
-          - Descriptions: Maximum 12 words, supporting the specific prompt and theme
-          - CTAs: Maximum 3 words, action-oriented and theme-appropriate
-          - ALL content must be specifically about the user's prompt, not generic insurance
-          - Apply the specified theme consistently throughout all text
+          - Headlines: Keep concise (around 5-8 words), related to user's prompt
+          - Descriptions: Brief and compelling (around 8-15 words)
+          - CTAs: Short and action-oriented (1-4 words)
+          - Content should relate to the user's prompt and theme
+          - Focus on clear, engaging messaging
           
           Return ONLY a valid JSON object with this exact structure:
           {
@@ -86,11 +100,11 @@ export async function POST(req: Request) {
           
     const userPrompt = `Generate 5 banner variations specifically about: "${prompt}"
           
-          CRITICAL REQUIREMENTS:
+          KEY REQUIREMENTS:
           - Language: ${language}
-          - Theme: ${theme} (apply this theme strongly to all content)
+          - Theme: ${theme} (incorporate this theme)
           - Line of business: ${lob || 'auto'} insurance
-          - Every headline and description MUST relate directly to "${prompt}"
+          - Content should relate to "${prompt}"
           
           Theme application for ${theme}:
           ${theme === 'urgency' ? '- Use time-sensitive language, deadlines, "limited time", "act now"' : ''}
@@ -107,10 +121,11 @@ export async function POST(req: Request) {
           4. Emotional appeal about "${prompt}" through ${theme} lens
           5. Call-to-action focused on "${prompt}" with ${theme} urgency
           
-          Each banner must be clearly about "${prompt}" and feel distinctly ${theme}-themed.`;
+          Create varied approaches to "${prompt}" with ${theme} elements.`;
           
     console.log('📋 System prompt:', systemPrompt);
     console.log('👤 User prompt:', userPrompt);
+    console.log('🎯 Original user input:', prompt);
     
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -124,84 +139,159 @@ export async function POST(req: Request) {
           content: userPrompt
         }
       ],
-      temperature: 0.7
+      temperature: 0.6, // Slightly more consistent
+      max_tokens: 2000 // Ensure sufficient response length
     });
 
     const responseText = completion.choices[0]?.message?.content;
+    console.log('🤖 OpenAI raw response:', responseText);
+    
     if (!responseText) {
       throw new Error('No response from OpenAI');
     }
 
-    // Parse the JSON response
-    const bannerData = JSON.parse(responseText);
+    // Parse the JSON response with error handling
+    let bannerData;
+    try {
+      // Try to extract JSON if response has extra text
+      const jsonStart = responseText.indexOf('{');
+      const jsonEnd = responseText.lastIndexOf('}') + 1;
+      const jsonString = responseText.substring(jsonStart, jsonEnd);
+      bannerData = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('JSON parsing failed:', parseError);
+      throw new Error('Invalid JSON response from AI');
+    }
+    console.log('📦 Parsed banner data:', JSON.stringify(bannerData, null, 2));
+    console.log('✅ Successfully generated', bannerData.banners?.length || 0, 'banners');
     
-    return new Response(JSON.stringify(bannerData), {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  } catch (error) {
-    console.error('API Error Details:', error)
-    
-    // Check if it's a quota exceeded error
-    if (error?.message?.includes('429') || error?.message?.includes('quota')) {
-      console.log('OpenAI quota exceeded, providing fallback response')
-      
-      // Return 5 simple fallback banners
-      return new Response(JSON.stringify({
-        banners: [
-          {
-            design: { template: 'standard', layout: 'center', colors: { background: '#10B981', text: '#FFFFFF', cta: '#F59E0B' }},
-            content: {
-              headline: 'Get Cheapest Insurance!',
-              description: 'Save money today',
-              ctaText: 'Buy Now'
-            }
-          },
-          {
-            design: { template: 'standard', layout: 'center', colors: { background: '#3B82F6', text: '#FFFFFF', cta: '#10B981' }},
-            content: {
-              headline: 'Insurance in 2 Minutes!',
-              description: 'Instant approval',
-              ctaText: 'Start Now'
-            }
-          },
-          {
-            design: { template: 'standard', layout: 'center', colors: { background: '#8B5CF6', text: '#FFFFFF', cta: '#F59E0B' }},
-            content: {
-              headline: 'Trusted Protection',
-              description: '1 Crore+ happy customers',
-              ctaText: 'Join Now'
-            }
-          },
-          {
-            design: { template: 'standard', layout: 'center', colors: { background: '#EF4444', text: '#FFFFFF', cta: '#FBBF24' }},
-            content: {
-              headline: 'Do It Today!',
-              description: 'Limited time offer',
-              ctaText: 'Get Now'
-            }
-          },
-          {
-            design: { template: 'standard', layout: 'center', colors: { background: '#F59E0B', text: '#FFFFFF', cta: '#10B981' }},
-            content: {
-              headline: 'Exclusive Offer!',
-              description: 'Just for you',
-              ctaText: 'Claim Now'
-            }
-          }
-        ]
-      }), {
-        headers: { 'Content-Type': 'application/json' }
-      })
+    // Ensure at least 3 banners are returned (more flexible)
+    if (!bannerData.banners || bannerData.banners.length < 3) {
+      console.warn('API returned too few banners, using fallback');
+      throw new Error('Insufficient banner count - using fallback');
     }
     
-    return new Response(
-      JSON.stringify({ 
-        error: 'Failed to generate banners. Please check your API configuration.',
-        details: error?.message || 'Unknown error'
-      }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    )
+    // Pad with duplicates if we got less than 5 banners
+    while (bannerData.banners.length < 5) {
+      const randomBanner = bannerData.banners[Math.floor(Math.random() * bannerData.banners.length)];
+      bannerData.banners.push({ ...randomBanner });
+    }
+    
+        return new Response(JSON.stringify(bannerData), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+      } catch (attemptError) {
+        console.error(`❌ Attempt ${attempt} failed:`, attemptError?.message);
+        lastError = attemptError;
+        
+        // If it's a network issue and we have retries left, wait and try again
+        if (attempt < maxRetries && (attemptError?.message?.includes('Connection error') || attemptError?.cause?.code === 'ETIMEDOUT')) {
+          console.log(`⏳ Waiting 2 seconds before retry...`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          continue;
+        }
+        
+        // If it's not a network issue or we're out of retries, break and use fallback
+        break;
+      }
+    }
+    
+    // If we get here, all retries failed
+    throw lastError || new Error('All retry attempts failed');
+  } catch (error) {
+    console.error('API Error Details:', error)
+    console.error('Error message:', error?.message)
+    console.error('Error type:', typeof error)
+    
+    // Check if it's an OpenAI API error
+    if (error?.error?.type) {
+      console.error('OpenAI API Error Type:', error.error.type)
+      console.error('OpenAI API Error Code:', error.error.code)
+    }
+    
+    // Check if it's a connection/timeout error
+    if (error?.message?.includes('Connection error') || error?.message?.includes('timeout') || error?.cause?.code === 'ETIMEDOUT') {
+      console.error('🔌 Network/Connection issue detected - using fallback')
+    } else if (error?.message?.includes('JSON')) {
+      console.error('📝 JSON parsing issue - using fallback')
+    } else {
+      console.error('❓ Unknown error - using fallback')
+    }
+    
+    // Generate theme-aware fallback banners
+    console.log('Generating fallback response for theme:', theme)
+    
+    const getFallbackBanners = (selectedTheme: string) => {
+      const themeContent = {
+        fomo: [
+          { headline: 'Others are saving!', description: 'Don\'t miss out', ctaText: 'Join Now' },
+          { headline: 'Limited spots left', description: 'Act before it\'s gone', ctaText: 'Secure Now' },
+          { headline: 'Your neighbors saved', description: 'Why haven\'t you?', ctaText: 'Start Now' },
+          { headline: 'Missing great deals?', description: 'Others aren\'t', ctaText: 'Get Yours' },
+          { headline: 'Don\'t be left out', description: 'Join thousands', ctaText: 'Sign Up' }
+        ],
+        urgency: [
+          { headline: 'Act Now!', description: 'Limited time offer', ctaText: 'Buy Today' },
+          { headline: 'Expires Soon!', description: 'Don\'t wait', ctaText: 'Get Now' },
+          { headline: 'Final Hours!', description: 'Offer ends tonight', ctaText: 'Hurry Up' },
+          { headline: 'Time Running Out!', description: 'Secure your spot', ctaText: 'Act Fast' },
+          { headline: 'Today Only!', description: 'Special pricing', ctaText: 'Buy Now' }
+        ],
+        exclusivity: [
+          { headline: 'VIP Access Only', description: 'Exclusive offer', ctaText: 'Join VIP' },
+          { headline: 'Members Only', description: 'Special pricing', ctaText: 'Get Access' },
+          { headline: 'Invitation Only', description: 'Limited access', ctaText: 'Accept Now' },
+          { headline: 'Premium Members', description: 'Exclusive benefits', ctaText: 'Upgrade' },
+          { headline: 'Select Customers', description: 'Special treatment', ctaText: 'Qualify' }
+        ],
+        value: [
+          { headline: 'Best Price Guaranteed', description: 'Save money today', ctaText: 'Save Now' },
+          { headline: 'Cheapest Rates', description: 'Compare & save', ctaText: 'Get Quote' },
+          { headline: 'Huge Savings', description: 'Up to 50% off', ctaText: 'Save Big' },
+          { headline: 'Lowest Price', description: 'Beat any quote', ctaText: 'Start Now' },
+          { headline: 'Great Value', description: 'More for less', ctaText: 'Compare' }
+        ],
+        trust: [
+          { headline: 'Trusted by Millions', description: '5-star rated', ctaText: 'Join Us' },
+          { headline: 'Secure & Reliable', description: 'Your safety first', ctaText: 'Get Protected' },
+          { headline: '99.9% Uptime', description: 'Always there', ctaText: 'Trust Us' },
+          { headline: 'Award Winning', description: 'Industry leader', ctaText: 'Choose Best' },
+          { headline: 'Certified Safe', description: 'Fully licensed', ctaText: 'Feel Safe' }
+        ],
+        community: [
+          { headline: 'Join Our Community', description: '1M+ happy members', ctaText: 'Join Us' },
+          { headline: 'Together We Save', description: 'Community power', ctaText: 'Be Part' },
+          { headline: 'Connect & Save', description: 'Social benefits', ctaText: 'Connect' },
+          { headline: 'Community Rates', description: 'Group discounts', ctaText: 'Join Group' },
+          { headline: 'Member Benefits', description: 'Exclusive community', ctaText: 'Become Member' }
+        ]
+      };
+
+      const content = themeContent[selectedTheme] || themeContent.value;
+      const colors = ['#10B981', '#3B82F6', '#8B5CF6', '#EF4444', '#F59E0B'];
+      const ctaColors = ['#F59E0B', '#10B981', '#F59E0B', '#FBBF24', '#10B981'];
+
+      return content.map((item, index) => ({
+        design: { 
+          template: 'standard', 
+          layout: 'center', 
+          colors: { 
+            background: colors[index], 
+            text: '#FFFFFF', 
+            cta: ctaColors[index] 
+          }
+        },
+        content: item
+      }));
+    };
+
+    return new Response(JSON.stringify({
+      banners: getFallbackBanners(theme)
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    })
   }
 }

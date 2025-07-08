@@ -28,6 +28,7 @@ export function useImageSelection({ lob, imageType }: ImageSelectionConfig) {
         '/images/auto/character/character1.png',
         '/images/auto/character/character2.png',
         '/images/auto/character/character3.png',
+        '/images/auto/character/character4.png',
         '/images/auto/character/character5.png',
         '/images/auto/character/character6.png',
         '/images/auto/character/character7.png'
@@ -82,6 +83,11 @@ export function useImageSelection({ lob, imageType }: ImageSelectionConfig) {
 
   useEffect(() => {
     setSelectedImage(getRandomImage())
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      setSelectedImage('')
+    }
   }, [getRandomImage])
 
   const refreshImage = useCallback(() => {
